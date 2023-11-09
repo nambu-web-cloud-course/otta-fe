@@ -24,7 +24,6 @@ module.exports = {
 		indent: ['error', 'tab'],
 		quotes: ['error', 'single'],
 		semi: ['error', 'always'],
-		'linebreak-style': ['error', 'unix'],
 		'react/react-in-jsx-scope': 'off',
 	},
 };
