@@ -1,14 +1,64 @@
+/* eslint-disable no-unused-vars */
 import { Outlet, useSearchParams } from 'react-router-dom';
 import { Title } from '../components/common/Title';
-import { Box, Button, TextField, lighten, styled } from '@mui/material';
+import {
+	Box,
+	Button,
+	TextField,
+	ListItem,
+	ListItemIcon,
+	ListItemText,
+	lighten,
+	styled,
+	ListItemButton,
+} from '@mui/material';
+import { FixedSizeList, areEqual } from 'react-window';
+
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import KakaoMap from '../components/findClothingBox/KakaoMap';
+import mock_addr_data from '../data/addrData';
+import memoize from 'memoize-one';
+import { memo, useState } from 'react';
+
+const Row = memo(({ data, index, style }) => {
+	const { items, clickLocation } = data;
+	const { addr, x, y } = items[index];
+
+	const onClickListItem = () => {
+		clickLocation({ addr, x, y });
+	};
+
+	return (
+		<ListItem style={style} key={index} component="div" disablePadding>
+			<ListItemButton onClick={onClickListItem}>
+				<ListItemIcon>
+					<FmdGoodIcon />
+				</ListItemIcon>
+				<ListItemText primary={`${addr}`} secondary={'지도에서 보기'} />
+			</ListItemButton>
+		</ListItem>
+	);
+}, areEqual);
+
+Row.displayName = 'LocationRow';
+
+const createItemData = memoize((items, clickLocation) => ({
+	items,
+	clickLocation,
+}));
 
 const FindClothingBox = () => {
-	// eslint-disable-next-line no-unused-vars
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const pageId = searchParams.get('addr');
 
-	console.log('pageId: ', pageId);
+	const [selectedLocation, setSelectedLocation] = useState({ x: 126.9534911, y: 37.47701556 });
+
+	const onClickLocation = data => {
+		setSelectedLocation({ x: data.x, y: data.y });
+	};
+
+	const itemData = createItemData(mock_addr_data, onClickLocation);
 
 	return (
 		<>
@@ -30,7 +80,24 @@ const FindClothingBox = () => {
 					검색하기
 				</SearchButton>
 			</Box>
-			<Outlet />
+			{pageId && (
+				<Box sx={{ width: '100%', display: 'flex' }}>
+					<Box sx={{ width: '100%', height: 400, maxWidth: 360 }}>
+						<FixedSizeList
+							height={400}
+							width={360}
+							itemSize={70}
+							itemCount={mock_addr_data.length}
+							overscanCount={5}
+							itemData={itemData}
+						>
+							{Row}
+						</FixedSizeList>
+					</Box>
+					<KakaoMap x={selectedLocation.x} y={selectedLocation.y} />
+				</Box>
+			)}
+			{!pageId && <Outlet />}
 		</>
 	);
 };
