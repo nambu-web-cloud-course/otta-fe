@@ -1,10 +1,16 @@
-import Header from './components/Header';
+import { Route, Routes } from 'react-router-dom';
+import SignIn from './pages/SignIn';
+import Header from './components/layout/Header';
+import Home from './pages/Home';
+
 const App = () => {
 	return (
-		<div>
-			<Header />
-			<p>옷다 기본 템플릿이에요</p>
-		</div>
+		<Routes>
+			<Route element={<Header />}>
+				<Route path="/" element={<Home />} />
+				<Route path="sign-in" element={<SignIn />} />
+			</Route>
+		</Routes>
 	);
 };
 
