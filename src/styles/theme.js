@@ -1,4 +1,6 @@
-const theme = {
+import { createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
 	font_sizes: {
 		xxs: '14px',
 		xs: '16px',
@@ -8,6 +10,8 @@ const theme = {
 		lg: '48px',
 	},
 	colors: {
+		WHITE: '#FFFFFF',
+		BLACK: '#000000',
 		NAVY: '#545473',
 		BEIGE: '#EBDBD8',
 		DARK_GRAY: '#C4ACAA',
@@ -18,6 +22,6 @@ const theme = {
 		DARK_PURPLE: '#904B59',
 		DARK_SKY: '#9494C4',
 	},
-};
+});
 
 export default theme;
