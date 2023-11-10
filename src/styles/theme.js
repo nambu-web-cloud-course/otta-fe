@@ -1,5 +1,5 @@
 const theme = {
-	fontSizes: {
+	font_sizes: {
 		xxs: '14px',
 		xs: '16px',
 		sm: '20px',

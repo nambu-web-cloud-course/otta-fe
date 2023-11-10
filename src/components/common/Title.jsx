@@ -7,4 +7,5 @@ export const Title = ({ text }) => {
 
 const H1 = styled.h1`
 	font-weight: bold;
+	font-size: ${props => props.theme.font_sizes.lg};
 `;
