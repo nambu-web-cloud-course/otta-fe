@@ -7,6 +7,8 @@ import Init from './components/findClothingBox/Init';
 import NoData from './components/findClothingBox/NoData';
 import MyPostList from './pages/MyPostList';
 import SideBar from './components/layout/SideBar';
+import NanumList from './pages/NanumList';
+import NanumDetail from './pages/NanumDetail';
 
 const App = () => {
 	return (
@@ -18,6 +20,10 @@ const App = () => {
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
 					<Route path="" element={<Init />} />
 					<Route path="no-data" element={<NoData />} />
+				</Route>
+				<Route path="nanum">
+					<Route path="list" element={<NanumList />} />
+					<Route path="detail" element={<NanumDetail />} />
 				</Route>
 				<Route path="my-page/:userId">
 					<Route element={<SideBar />}>
