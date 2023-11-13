@@ -18,7 +18,7 @@ import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import KakaoMap from '../components/findClothingBox/KakaoMap';
 import mock_addr_data from '../data/addrData';
 import memoize from 'memoize-one';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 const Row = memo(({ data, index, style }) => {
 	const { items, clickLocation } = data;
@@ -52,13 +52,45 @@ const FindClothingBox = () => {
 
 	const pageId = searchParams.get('addr');
 
-	const [selectedLocation, setSelectedLocation] = useState({ x: 126.9534911, y: 37.47701556 });
+	// const [currentLocation, setCurrentLocation] = useState({ x: 126.9534911, y: 37.47701556 });
+	const DEFAULT_LOCATION = { x: 126.9061642, y: 37.4632873 };
+	const [defaultLocation, setDefaultLocation] = useState(DEFAULT_LOCATION);
+	const [selectedLocation, setSelectedLocation] = useState({ x: null, y: null });
+	const [triggerPing, setTriggerPing] = useState(0);
 
 	const onClickLocation = data => {
+		console.log(data);
+		setTriggerPing(prev => prev + 1);
 		setSelectedLocation({ x: data.x, y: data.y });
 	};
 
 	const itemData = createItemData(mock_addr_data, onClickLocation);
+
+	useEffect(() => {
+		if ('geolocation' in navigator) {
+			// Prompt user for permission to access their location
+			navigator.geolocation.getCurrentPosition(
+				// Success callback function
+				position => {
+					// Get the user's latitude and longitude coordinates
+					const lat = position.coords.latitude;
+					const lng = position.coords.longitude;
+
+					// Do something with the location data, e.g. display on a map
+					console.log(`lat: ${lat}, lng: ${lng}`);
+					setDefaultLocation({ x: lng, y: lat });
+				},
+				// Error callback function
+				error => {
+					// Handle errors, e.g. user denied location sharing permissions
+					console.error('Error getting user location:', error);
+				},
+			);
+		} else {
+			// Geolocation is not supported by the browser
+			console.error('Geolocation is not supported by this browser.');
+		}
+	}, []);
 
 	return (
 		<>
@@ -94,7 +126,13 @@ const FindClothingBox = () => {
 							{Row}
 						</FixedSizeList>
 					</Box>
-					<KakaoMap x={selectedLocation.x} y={selectedLocation.y} />
+					<KakaoMap
+						defaultX={defaultLocation.x}
+						defaultY={defaultLocation.y}
+						x={selectedLocation.x}
+						y={selectedLocation.y}
+						triggerPing={triggerPing}
+					/>
 				</Box>
 			)}
 			{!pageId && <Outlet />}
