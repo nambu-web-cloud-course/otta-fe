@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import PostCode from '../components/sign/PostCode.jsx';
 // import axios from 'axios';
 
 export default function SignUp() {
@@ -17,8 +18,9 @@ export default function SignUp() {
 	const [name, setName] = useState('');
 	const [nickname, setNickname] = useState('');
 	const [phone, setPhone] = useState('');
-	const [zipcode, setZipcode] = useState('');
-	const [addr, setAddr] = useState('');
+	const [addr, setAddr] = useState({
+		address: '',
+	});
 	const [addr_detail, setAddrdetail] = useState('');
 	const [error, setError] = useState(false);
 	const [err_msg, setErrMsg] = useState('');
@@ -28,6 +30,8 @@ export default function SignUp() {
 	// const passwordRegEx = /^[A-Za-z0-9]{8,20}$/
 	const [pw_error, setPwError] = useState(false);
 	const [pw_err_msg, setPwErrMsg] = useState('');
+
+	const [popup, setPopup] = useState(false);
 
 	const emailCheck = e => {
 		if (!emailRegEx.test(e.currentTarget.value)) {
@@ -72,25 +76,24 @@ export default function SignUp() {
 		setPhone(e.currentTarget.value);
 	};
 
-	const handleZipcode = e => {
-		setZipcode(e.currentTarget.value);
-	};
 	const handleAddr = e => {
-		setAddr(e.currentTarget.value);
+		setAddr({
+			...addr,
+			[e.target.name]: e.target.value,
+		});
 	};
 	const handleAddrDetail = e => {
-		setAddrdetail(e.currentTarget.value);
+		setAddrdetail(e.target.value);
 	};
 
-	const onClickAddr = () => {
-		console.log('주소찾기 클릭');
+	const handleComplete = () => {
+		setPopup(!popup);
 	};
-
 	const onClickSignUp = () => {
 		console.log(
 			`아이디: ${email} 비밀번호: ${password} 비밀번호확인: ${check_password} 
 			이름: ${name} 닉네임: ${nickname} 핸드폰:${phone}  
-			우편번호: ${zipcode} 주소:${addr} ${addr_detail} `,
+		  주소:${addr.address} ${addr_detail} `,
 		);
 	};
 
@@ -169,30 +172,6 @@ export default function SignUp() {
 						type="text"
 						onChange={handlePhone}
 					/>
-					<Grid container>
-						<Grid item xs>
-							<SignUpTextField
-								margin="normal"
-								name="zipcode"
-								required
-								disabled
-								fullWidth
-								label="우편번호"
-								type="text"
-								onChange={handleZipcode}
-							/>
-						</Grid>
-						<Grid item>
-							<SignUpButton
-								type="submit"
-								onClick={onClickAddr}
-								variant="contained"
-								sx={{ mt: 2, marginLeft: 1 }}
-							>
-								주소찾기
-							</SignUpButton>
-						</Grid>
-					</Grid>
 					<SignUpTextField
 						margin="normal"
 						name="addr_road"
@@ -202,16 +181,34 @@ export default function SignUp() {
 						label="도로명 주소"
 						type="text"
 						onChange={handleAddr}
+						value={addr.address}
 					/>
-					<SignUpTextField
-						margin="normal"
-						name="addr_detail"
-						required
-						fullWidth
-						label="상세주소"
-						type="text"
-						onChange={handleAddrDetail}
-					/>
+					<Grid container>
+						<Grid item xs>
+							<SignUpTextField
+								margin="normal"
+								name="addr_detail"
+								required
+								fullWidth
+								label="상세주소"
+								type="text"
+								onChange={handleAddrDetail}
+								value={addr_detail}
+							/>
+						</Grid>
+						<Grid item>
+							<SignUpButton
+								type="submit"
+								onClick={handleComplete}
+								variant="contained"
+								sx={{ mt: 2, marginLeft: 1 }}
+							>
+								주소찾기
+							</SignUpButton>
+							{popup && <PostCode address={addr} setAddress={setAddr}></PostCode>}
+						</Grid>
+					</Grid>
+
 					<Typography>* 필수 입력사항입니다</Typography>
 					<div>
 						<SignUpButton
