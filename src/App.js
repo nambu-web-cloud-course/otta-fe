@@ -7,6 +7,8 @@ import FindClothingBox from './pages/FindClothingBox';
 import Init from './components/findClothingBox/Init';
 import NoData from './components/findClothingBox/NoData';
 import CreatePost from './pages/CreatePost';
+import MyPostList from './pages/MyPostList';
+import SideBar from './components/layout/SideBar';
 
 const App = () => {
 	return (
@@ -21,6 +23,13 @@ const App = () => {
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
 					<Route path="" element={<Init />} />
 					<Route path="no-data" element={<NoData />} />
+				</Route>
+				<Route path="my-page/:userId">
+					<Route element={<SideBar />}>
+						<Route path="edit" element={<NoData />} />
+						<Route path="post-list" element={<MyPostList />} />
+						<Route path="comment-list" element={<NoData />} />
+					</Route>
 				</Route>
 			</Route>
 		</Routes>
