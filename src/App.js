@@ -19,7 +19,6 @@ const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="sign-in" element={<SignIn />} />
 				<Route path="sign-up" element={<SignUp />} />
-				<Route path="nanum/create-post" element={<CreatePost />} />
 
 				<Route path="tip-clothing-recycle" element={<NoData />} />
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
@@ -29,6 +28,7 @@ const App = () => {
 				<Route path="nanum">
 					<Route path="list" element={<NanumList />} />
 					<Route path="detail" element={<NanumDetail />} />
+					<Route path="create-post" element={<CreatePost />} />
 				</Route>
 				<Route path="my-page/:userId">
 					<Route element={<SideBar />}>
