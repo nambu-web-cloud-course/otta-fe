@@ -10,3 +10,12 @@ body {
 	display: flex;
 	justify-content: center;
 }
+
+button {
+	all: unset;
+	cursor: pointer;
+}
+
+button:focus {
+	outline: revert;
+}

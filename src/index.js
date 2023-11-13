@@ -10,6 +10,7 @@ import theme from './styles/theme';
 import normalize from './styles/normalize.css';
 
 import App from './App';
+import { IconLoader } from './components/common/IconLoader';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -20,6 +21,7 @@ root.render(
 					${normalize}
 				`}
 			/>
+			<IconLoader />
 			<ThemeProvider theme={theme}>
 				<App />
 			</ThemeProvider>

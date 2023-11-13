@@ -17,6 +17,7 @@ const App = () => {
 				<Route path="sign-up" element={<SignUp />} />
 				<Route path="nanum/create-post" element={<CreatePost />} />
 
+				<Route path="tip-clothing-recycle" element={<NoData />} />
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
 					<Route path="" element={<Init />} />
 					<Route path="no-data" element={<NoData />} />
