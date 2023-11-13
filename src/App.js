@@ -12,6 +12,7 @@ const App = () => {
 			<Route element={<Header />}>
 				<Route path="/" element={<Home />} />
 				<Route path="sign-in" element={<SignIn />} />
+				<Route path="tip-clothing-recycle" element={<NoData />} />
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
 					<Route path="" element={<Init />} />
 					<Route path="no-data" element={<NoData />} />
