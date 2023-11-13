@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Title } from '../components/common/Title';
-import { TextField, Grid, Button, lighten, styled } from '@mui/material';
+import {
+	TextField,
+	Grid,
+	Button,
+	lighten,
+	styled,
+	ImageList,
+	ImageListItem,
+	Box,
+	ListItem,
+} from '@mui/material';
 
 export default function CreatePost() {
 	const [post, setPost] = useState({});
@@ -23,58 +33,81 @@ export default function CreatePost() {
 		e.preventDefault();
 	};
 
+	const handleCancel = () => {
+		setPost({});
+		setImgs([]);
+	};
 	return (
-		<section>
+		<Box sx={{ width: 800 }}>
 			<Title text={'나눔 게시글 작성'} />
 
-			<Addform onSubmit={handleSubmit}>
-				<TextField
-					sx={{ mb: 5 }}
-					type="text"
-					name="title"
-					required
-					value={post.title ?? ''}
-					label="제목"
-					fullWidth
-					variant="standard"
-					onChange={handleChange}
-				/>
-				{imgs &&
+			{/* <Addform onSubmit={handleSubmit}> */}
+			<TextField
+				sx={{ mb: 5 }}
+				type="text"
+				name="title"
+				required
+				fullWidth
+				value={post.title ?? ''}
+				label="제목"
+				variant="standard"
+				onChange={handleChange}
+			/>
+			<Box>
+				<ImageList
+					cols={5}
+					gap={8}
+					sx={{ width: 800, height: 200, overflow: 'hidden' }}
+					rowHeight={164}
+				>
+					{imgs.map(image => (
+						<ImageListItem key={image.id}>
+							<img src={image} loading="lazy" />
+						</ImageListItem>
+					))}
+				</ImageList>
+			</Box>
+			{/* {imgs &&
 					imgs.map(image => {
 						return <img key={image.id} src={image} alt="image" width="200px" />;
-					})}
-				{/* {imgs && <img src={URL.createObjectURL(imgs)} alt="image" width="200px" />} */}
+					})} */}
+			{/* {imgs && <img src={URL.createObjectURL(imgs)} alt="image" width="200px" />} */}
 
-				{/* {imgs &&
+			{/* {imgs &&
 					imgs.forEach(image => {
 						<img src={URL.createObjectURL(image)} alt="image" width="200px" />;
 					})} */}
-				<Grid container sx={{ mt: 5 }}>
-					<Grid item xs>
-						<ContentTextField
-							name="content"
-							label="내용을 입력하세요"
-							multiline
-							variant="filled"
-							value={post.content ?? ''}
-							required
-							rows={15}
-							onChange={handleChange}
-						/>
-					</Grid>
-					<Grid item>
+			<Grid container sx={{ mt: 5 }}>
+				<Grid item xs>
+					<ContentTextField
+						name="content"
+						placeholder="내용을 입력하세요"
+						multiline
+						variant="outlined"
+						value={post.content ?? ''}
+						required
+						rows={12}
+						onChange={handleChange}
+					/>
+				</Grid>
+				<Grid item>
+					<ListItem>
 						<TextField type="file" accept="image/*" name="file" required onChange={handleChange} />
-
-						<SignUpButton variant="contained" fullWidth sx={{ mt: 5 }}>
+					</ListItem>
+					<ListItem>
+						<SignUpButton variant="contained" sx={{ mt: 5 }} onClick={handleSubmit}>
 							글 작성 완료하기
 						</SignUpButton>
-						<SignUpButton variant="contained" fullWidth sx={{ mt: 2 }}>
+					</ListItem>
+					<ListItem>
+						<SignUpButton variant="contained" sx={{ mt: 2 }} onClick={handleCancel}>
 							글 작성 취소하기
 						</SignUpButton>
-					</Grid>
+					</ListItem>
 				</Grid>
-			</Addform>
-		</section>
+			</Grid>
+			{/* </Addform> */}
+		</Box>
 	);
 }
 
@@ -89,10 +122,9 @@ const SignUpButton = styled(Button)(({ theme }) => ({
 		backgroundColor: lighten(theme.colors.DARK_YELLOW, 0.3),
 	},
 }));
-const Addform = styled('form')`
-	width: 150%;
-	margin-left: -25%;
-`;
+// const Addform = styled('form')`
+// 	// width: 150%;
+// `;
 const ContentTextField = styled(TextField)`
 	width: 100%;
 `;
