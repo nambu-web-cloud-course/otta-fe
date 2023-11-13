@@ -52,14 +52,12 @@ const FindClothingBox = () => {
 
 	const pageId = searchParams.get('addr');
 
-	// const [currentLocation, setCurrentLocation] = useState({ x: 126.9534911, y: 37.47701556 });
 	const DEFAULT_LOCATION = { x: 126.9061642, y: 37.4632873 };
 	const [defaultLocation, setDefaultLocation] = useState(DEFAULT_LOCATION);
 	const [selectedLocation, setSelectedLocation] = useState({ x: null, y: null });
 	const [triggerPing, setTriggerPing] = useState(0);
 
 	const onClickLocation = data => {
-		console.log(data);
 		setTriggerPing(prev => prev + 1);
 		setSelectedLocation({ x: data.x, y: data.y });
 	};
@@ -77,7 +75,6 @@ const FindClothingBox = () => {
 					const lng = position.coords.longitude;
 
 					// Do something with the location data, e.g. display on a map
-					console.log(`lat: ${lat}, lng: ${lng}`);
 					setDefaultLocation({ x: lng, y: lat });
 				},
 				// Error callback function
