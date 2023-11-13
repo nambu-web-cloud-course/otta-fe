@@ -61,6 +61,9 @@ const StyledHeader = styled('header')(({ theme }) => {
 		borderBottom: `1px solid ${theme.colors.NAVY}`,
 		alignItems: 'center',
 		justifyContent: 'space-around',
+
+		background: `${theme.colors.WHITE}`,
+		zIndex: 5,
 	};
 });
 
