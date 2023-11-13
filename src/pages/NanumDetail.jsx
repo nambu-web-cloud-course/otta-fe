@@ -37,7 +37,8 @@ const NanumDetail = () => {
 					gap: '32px',
 					marginTop: '54px',
 					border: `1px solid ${theme.colors.DARK_SKY}`,
-					padding: '20px',
+					padding: '90px',
+					paddingTop: '70px',
 				}}
 			>
 				<StyledSubTitleWrapper>
@@ -57,15 +58,19 @@ const NanumDetail = () => {
 				})}
 				<StyledContent>{detail.content}</StyledContent>
 			</Box>
-			<CustomButton
-				width={370}
-				height={68}
-				fontSize={'base'}
-				color={'DARK_SKY'}
-				textColor={'WHITE'}
-				text={'응답글 작성하기'}
-				onClick={() => goTo(`/nanum/${postId}/comment`)}
-			/>
+			{!detail.isMyPost && (
+				<Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+					<CustomButton
+						width={370}
+						height={68}
+						fontSize={'base'}
+						color={'DARK_SKY'}
+						textColor={'WHITE'}
+						text={'응답글 작성하기'}
+						onClick={() => goTo(`/nanum/${postId}/comment`)}
+					/>
+				</Box>
+			)}
 		</Box>
 	);
 };
@@ -74,7 +79,8 @@ export default NanumDetail;
 
 const StyledSubTitleWrapper = styled('div')`
 	display: flex;
-	justify-content: end;
+	justify-content: space-between;
+	width: 100%;
 `;
 
 const StyledSubTitle = styled('div')(({ theme }) => {
