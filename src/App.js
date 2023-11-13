@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import FindClothingBox from './pages/FindClothingBox';
 import Init from './components/findClothingBox/Init';
 import NoData from './components/findClothingBox/NoData';
+import CreatePost from './pages/CreatePost';
 
 const App = () => {
 	return (
@@ -14,6 +15,8 @@ const App = () => {
 				<Route path="/" element={<Home />} />
 				<Route path="sign-in" element={<SignIn />} />
 				<Route path="sign-up" element={<SignUp />} />
+				<Route path="nanum/create-post" element={<CreatePost />} />
+
 				<Route path="find-clothing-box" element={<FindClothingBox />}>
 					<Route path="" element={<Init />} />
 					<Route path="no-data" element={<NoData />} />
