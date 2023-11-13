@@ -1,0 +1,9 @@
+.postmodal {
+	background: rgba(0, 0, 0, 0.7);
+	position: fixed;
+	left: 5ch;
+	top: 5ch;
+	/* height: 100%;
+	width: 100%; */
+	border: 1px solid gray;
+}
