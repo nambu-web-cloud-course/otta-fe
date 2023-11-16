@@ -12,7 +12,7 @@ const generateMockData = n => {
 			phone: '01012345678',
 			addr: '서울특별시 금천구 독산로50길 23',
 			addr_detail: '본관 1층',
-			is_picked: !Math.floor(Math.random() * 2 === 1),
+			is_picked: false,
 			is_clicked: false,
 		};
 		data.push(post);
