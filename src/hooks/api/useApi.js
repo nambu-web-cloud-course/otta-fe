@@ -25,17 +25,17 @@ export const useApi = (url, method, options) => {
 
 		try {
 			if (method === 'GET') {
-				const response = await client.get(url, options);
-				setData(response.data);
+				const { data } = await client.get(url, options);
+				setData(data.data);
 			} else if (method === 'POST') {
-				const response = await client.post(url, options);
-				setData(response.data);
+				const { data } = await client.post(url, options);
+				setData(data.data);
 			} else if (method === 'PUT') {
-				const response = await client.put(url, options);
-				setData(response.data);
+				const { data } = await client.put(url, options);
+				setData(data.data);
 			} else if (method === 'DELETE') {
-				const response = await client.delete(url, options);
-				setData(response.data);
+				const { data } = await client.delete(url, options);
+				setData(data.data);
 			}
 		} catch (error) {
 			setError(error);

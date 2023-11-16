@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Outlet, useSearchParams } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Title } from '../components/common/Title';
 import {
 	Box,
@@ -16,16 +16,19 @@ import { FixedSizeList, areEqual } from 'react-window';
 
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import KakaoMap from '../components/findClothingBox/KakaoMap';
-import mock_addr_data from '../data/addrData';
 import memoize from 'memoize-one';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { useApi } from '../hooks/api/useApi';
+import Dropdown from '../components/findClothingBox/Dropdown';
+import NoData from '../components/findClothingBox/NoData';
+import Init from '../components/findClothingBox/Init';
 
 const Row = memo(({ data, index, style }) => {
 	const { items, clickLocation } = data;
-	const { addr, x, y } = items[index];
+	const { address, x, y } = items[index];
 
 	const onClickListItem = () => {
-		clickLocation({ addr, x, y });
+		clickLocation({ address, x, y });
 	};
 
 	return (
@@ -34,7 +37,7 @@ const Row = memo(({ data, index, style }) => {
 				<ListItemIcon>
 					<FmdGoodIcon />
 				</ListItemIcon>
-				<ListItemText primary={`${addr}`} secondary={'지도에서 보기'} />
+				<ListItemText primary={`${address}`} secondary={'지도에서 보기'} />
 			</ListItemButton>
 		</ListItem>
 	);
@@ -48,21 +51,34 @@ const createItemData = memoize((items, clickLocation) => ({
 }));
 
 const FindClothingBox = () => {
-	const [searchParams, setSearchParams] = useSearchParams();
-
-	const pageId = searchParams.get('addr');
+	const navigate = useNavigate();
 
 	const DEFAULT_LOCATION = { x: 126.9061642, y: 37.4632873 };
 	const [defaultLocation, setDefaultLocation] = useState(DEFAULT_LOCATION);
 	const [selectedLocation, setSelectedLocation] = useState({ x: null, y: null });
 	const [triggerPing, setTriggerPing] = useState(0);
 
-	const onClickLocation = data => {
-		setTriggerPing(prev => prev + 1);
-		setSelectedLocation({ x: data.x, y: data.y });
+	const [searchQuery, setSearchQuery] = useState({ district: '', region: '' });
+
+	const onChangeInput = e => {
+		setSearchQuery(e.target.value);
 	};
 
-	const itemData = createItemData(mock_addr_data, onClickLocation);
+	const { data, isLoading, error, triggerFetch } = useApi('/find-clothing-box/addr', 'GET', {
+		params: { district: searchQuery.district, region: searchQuery.region },
+	});
+
+	const onClick = async e => {
+		e.preventDefault();
+		triggerFetch();
+	};
+
+	const onClickLocation = data => {
+		setTriggerPing(prev => prev + 1);
+		setSelectedLocation({ x: +data.x, y: +data.y });
+	};
+
+	const itemData = useMemo(() => createItemData(data, onClickLocation), [data]);
 
 	useEffect(() => {
 		if ('geolocation' in navigator) {
@@ -98,25 +114,38 @@ const FindClothingBox = () => {
 				noValidate
 				autoComplete="off"
 			>
+				<Dropdown setSearchQuery={setSearchQuery} />
+				<SearchButton type="submit" fullWidth variant="contained" onClick={onClick}>
+					검색하기
+				</SearchButton>
+			</Box>
+			{/* //TODO: 추후 구현 예정 */}
+			{/* <Box
+				component="form"
+				sx={{ width: 800, display: 'flex', gap: 1, marginTop: '10px' }}
+				noValidate
+				autoComplete="off"
+			>
 				<LocationTextField
 					id="outlined-basic"
 					label="찾을 주소를 검색해주세요"
 					placeholder="ex. 서울특별시 구로구 구로2동"
 					variant="outlined"
 					fullWidth
+					onChange={onChangeInput}
 				/>
-				<SearchButton type="submit" fullWidth variant="contained">
+				<SearchButton type="submit" fullWidth variant="contained" onClick={onClick}>
 					검색하기
 				</SearchButton>
-			</Box>
-			{pageId && (
-				<Box sx={{ width: '100%', display: 'flex' }}>
+			</Box> */}
+			{data && (
+				<Box sx={{ width: '100%', display: 'flex', marginTop: '30px' }}>
 					<Box sx={{ width: '100%', height: 400, maxWidth: 360 }}>
 						<FixedSizeList
 							height={400}
 							width={360}
 							itemSize={70}
-							itemCount={mock_addr_data.length}
+							itemCount={data.length}
 							overscanCount={5}
 							itemData={itemData}
 						>
@@ -132,7 +161,8 @@ const FindClothingBox = () => {
 					/>
 				</Box>
 			)}
-			{!pageId && <Outlet />}
+			{!data && !error && <Init />}
+			{!data && error && <NoData />}
 		</>
 	);
 };
