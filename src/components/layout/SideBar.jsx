@@ -81,6 +81,9 @@ const SideBarWrapper = styled('div')(({ theme }) => {
 		fontWeight: 'bold',
 		fontSize: theme.font_sizes.sm,
 		borderRight: `1px solid ${theme.colors.NAVY}`,
+
+		background: theme.colors.WHITE,
+		zIndex: 5,
 	};
 });
 
