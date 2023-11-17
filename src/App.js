@@ -5,7 +5,7 @@ import Header from './components/layout/Header';
 import Home from './pages/Home';
 import FindClothingBox from './pages/FindClothingBox';
 import NoData from './components/findClothingBox/NoData';
-import CreatePost from './pages/CreatePost';
+import CreatePost from './pages/CreateComment';
 import MyPostList from './pages/MyPostList';
 import SideBar from './components/layout/SideBar';
 import NanumList from './pages/NanumList';
