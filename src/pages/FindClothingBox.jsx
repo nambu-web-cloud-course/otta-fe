@@ -51,18 +51,12 @@ const createItemData = memoize((items, clickLocation) => ({
 }));
 
 const FindClothingBox = () => {
-	const navigate = useNavigate();
-
 	const DEFAULT_LOCATION = { x: 126.9061642, y: 37.4632873 };
 	const [defaultLocation, setDefaultLocation] = useState(DEFAULT_LOCATION);
 	const [selectedLocation, setSelectedLocation] = useState({ x: null, y: null });
 	const [triggerPing, setTriggerPing] = useState(0);
 
 	const [searchQuery, setSearchQuery] = useState({ district: '', region: '' });
-
-	const onChangeInput = e => {
-		setSearchQuery(e.target.value);
-	};
 
 	const { data, isLoading, error, triggerFetch } = useApi('/find-clothing-box/addr', 'GET', {
 		params: { district: searchQuery.district, region: searchQuery.region },
