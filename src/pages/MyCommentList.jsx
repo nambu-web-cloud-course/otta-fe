@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Title } from '../components/common/Title';
 import {
 	Box,
@@ -13,9 +13,11 @@ import {
 	styled,
 	tableCellClasses,
 } from '@mui/material';
+import { useApi } from '../hooks/api/useApi';
 
 const MyCommentList = () => {
 	const [commentList, setCommentList] = useState([]);
+
 	const status_kor = status => (status === 1 ? '진행 전' : status === 2 ? '진행 중' : '완료');
 	const is_picked_kor = is_picked => (is_picked ? '수락됨' : '');
 	const createData = result => {
@@ -42,74 +44,60 @@ const MyCommentList = () => {
 		};
 	};
 
-	const rows = [
-		createData({
-			post_id: 0,
-			post_created_at: '2023-11-15 17:45:10',
-			post_author: '옷장 마스터',
-			post_title: '레이스 달린 커튼이나 옷 구합니다',
-			post_status: 2,
-			comment_is_picked: true,
-			comment_content:
-				'저에게 꼭 필요한 코트입니다.\n제가 가지고 있는 옷과 딱 매치가 될 것 같아요.\n추워지는 날씨에 맞춰 제가 새 주인이 되어 보고 싶습니다.\n예쁘게 입으신 옷 저도 잘 관리하며 입을게요',
-			comment_phone: '01012345678',
-			comment_addr: '서울특별시 금천구 독산로50길 23',
-			comment_detail_addr: '본관 1층',
-		}),
-		createData({
-			post_id: 0,
-			post_created_at: '2023-11-15 17:45:10',
-			post_author: '옷장 마스터',
-			post_title: '레이스 달린 커튼이나 옷 구합니다',
-			post_status: 1,
-			comment_is_picked: false,
-			comment_content:
-				'저에게 꼭 필요한 코트입니다.\n제가 가지고 있는 옷과 딱 매치가 될 것 같아요.\n추워지는 날씨에 맞춰 제가 새 주인이 되어 보고 싶습니다.\n예쁘게 입으신 옷 저도 잘 관리하며 입을게요',
-			comment_phone: '01012345678',
-			comment_addr: '서울특별시 금천구 독산로50길 23',
-			comment_detail_addr: '본관 1층',
-		}),
-	];
+	const { data, isLoading, error, triggerFetch } = useApi('/my-page/comment-list', 'GET');
+
+	useEffect(() => {
+		if (data && data.length > 0) {
+			setCommentList(data.map(ele => createData(ele)));
+		}
+	}, [data]);
+
+	useEffect(() => {
+		triggerFetch();
+	}, []);
 	return (
-		<div>
+		<Box sx={{ marginBottom: '30px' }}>
 			<Title text={'나의 응답 요청'} />
+			{error && <span>작성한 응답글이 없어요</span>}
 			<TableContainer component={Paper}>
-				<Table sx={{ maxWidth: 1160 }} aria-label="customized table">
-					<TableHead>
-						<TableRow>
-							<StyledTableCell>날짜</StyledTableCell>
-							<StyledTableCell sx={{ minWidth: 140 }}>작성자</StyledTableCell>
-							<StyledTableCell>나눔글 제목</StyledTableCell>
-							<StyledTableCell sx={{ minWidth: 140 }}>진행상황</StyledTableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{rows.map(row => (
-							<>
-								<StyledTableRow scope="row">
-									<StyledTableCell component="th">{row.created_at}</StyledTableCell>
-									<StyledTableCell>{row.author}</StyledTableCell>
-									<StyledTableCell>{row.title}</StyledTableCell>
-									<StyledTableCell>{row.status}</StyledTableCell>
-								</StyledTableRow>
-								<StyledTableRow>
-									<StyledTableCell></StyledTableCell>
-									<StyledTableCell></StyledTableCell>
-									<StyledTableCell>
-										<Box sx={{ display: 'flex', flexDirection: 'column' }}>
-											<p>{row.content}</p>
-											<span>전화번호: {row.phone}</span>
-											<span>주소: {row.addr}</span>
-										</Box>
-									</StyledTableCell>
-									<StyledTableCell>{row.is_picked}</StyledTableCell>
-								</StyledTableRow>
-							</>
-						))}
-					</TableBody>
-				</Table>
+				{!error && data && (
+					<Table sx={{ maxWidth: 1160 }} aria-label="customized table">
+						<TableHead>
+							<TableRow>
+								<StyledTableCell>날짜</StyledTableCell>
+								<StyledTableCell sx={{ minWidth: 140 }}>작성자</StyledTableCell>
+								<StyledTableCell>나눔글 제목</StyledTableCell>
+								<StyledTableCell sx={{ minWidth: 140 }}>진행상황</StyledTableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{commentList.map(row => (
+								<Fragment key={row.created_at}>
+									<StyledTableRow scope="row">
+										<StyledTableCell component="th">{row.created_at}</StyledTableCell>
+										<StyledTableCell>{row.author}</StyledTableCell>
+										<StyledTableCell>{row.title}</StyledTableCell>
+										<StyledTableCell>{row.status}</StyledTableCell>
+									</StyledTableRow>
+									<StyledTableRow>
+										<StyledTableCell></StyledTableCell>
+										<StyledTableCell></StyledTableCell>
+										<StyledTableCell>
+											<Box sx={{ display: 'flex', flexDirection: 'column' }}>
+												<p>{row.content}</p>
+												<span>전화번호: {row.phone}</span>
+												<span>주소: {row.addr}</span>
+											</Box>
+										</StyledTableCell>
+										<StyledTableCell>{row.is_picked}</StyledTableCell>
+									</StyledTableRow>
+								</Fragment>
+							))}
+						</TableBody>
+					</Table>
+				)}
 			</TableContainer>
-		</div>
+		</Box>
 	);
 };
 
