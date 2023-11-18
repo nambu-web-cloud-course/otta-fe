@@ -10,6 +10,7 @@ import MyPostList from './pages/MyPostList';
 import SideBar from './components/layout/SideBar';
 import NanumList from './pages/NanumList';
 import NanumDetail from './pages/NanumDetail';
+import MyCommentList from './pages/MyCommentList';
 
 const App = () => {
 	return (
@@ -30,7 +31,7 @@ const App = () => {
 					<Route element={<SideBar />}>
 						<Route path="edit" element={<NoData />} />
 						<Route path="post-list" element={<MyPostList />} />
-						<Route path="comment-list" element={<NoData />} />
+						<Route path="comment-list" element={<MyCommentList />} />
 					</Route>
 				</Route>
 			</Route>
