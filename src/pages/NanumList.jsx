@@ -1,15 +1,16 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Title } from '../components/common/Title';
 import { Box, Card, CardActions, CardContent, CardMedia, styled } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import CustomButton from '../components/common/CustomButton';
-import { mock_nanum_list_data } from '../data/nanumListData';
 import { useNavigateTo } from '../routes/navigate';
+import { useApi } from '../hooks/api/useApi';
 
 const NanumList = () => {
 	const goTo = useNavigateTo();
-	const [postList, setPostList] = useState(mock_nanum_list_data);
+	const [postList, setPostList] = useState([]);
+
+	const { data, error, triggerFetch } = useApi('/nanum-post/list', 'GET');
 
 	const STATUS = [
 		{ status: 1, text: '주인 찾기 진행 중' },
@@ -25,6 +26,16 @@ const NanumList = () => {
 		e.stopPropagation();
 		goTo('/my-page/:userId/post-list');
 	};
+
+	useEffect(() => {
+		if (data && data.length > 0) {
+			setPostList(data);
+		}
+	}, [data]);
+
+	useEffect(() => {
+		triggerFetch();
+	}, []);
 
 	return (
 		<Box
@@ -50,41 +61,43 @@ const NanumList = () => {
 				/>
 			</ButtonWrapper>
 			<Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-				{postList.map(ele => {
-					return (
-						<Grid key={ele.id}>
-							<Card sx={{ maxWidth: 360 }} onClick={() => goTo(`/nanum/detail?postId=${ele.id}`)}>
-								<CardMedia sx={{ height: 140 }} image={ele.thumbnail} title={ele.title} />
-								<CardContent sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-									<StyledDateTypo>{ele.created_at}</StyledDateTypo>
-									<StyledTitle>{ele.title}</StyledTitle>
-									<StyledContent>{ele.content}</StyledContent>
-								</CardContent>
-								<CardActions>
-									<CustomButton
-										width={120}
-										height={40}
-										fontSize={'xxs'}
-										color={'DARK_YELLOW'}
-										textColor={'BLACK'}
-										text={getStatusText(ele.status)}
-									/>
-									{ele.isMyPost && (
+				{(error || postList.length === 0) && <span>작성한 나눔글이 없어요</span>}
+				{postList &&
+					postList.map(ele => {
+						return (
+							<Grid key={ele.id}>
+								<Card sx={{ maxWidth: 360 }} onClick={() => goTo(`/nanum/detail?postId=${ele.id}`)}>
+									<CardMedia sx={{ height: 140 }} image={ele.thumbnail_url} title={ele.title} />
+									<CardContent sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+										<StyledDateTypo>{ele.createdAt}</StyledDateTypo>
+										<StyledTitle>{ele.title}</StyledTitle>
+										<StyledContent>{ele.content}</StyledContent>
+									</CardContent>
+									<CardActions>
 										<CustomButton
 											width={120}
 											height={40}
 											fontSize={'xxs'}
-											color={'BEIGE'}
+											color={'DARK_YELLOW'}
 											textColor={'BLACK'}
-											text={'응답글 보기'}
-											onClick={goToDetailResponse}
+											text={getStatusText(ele.status)}
 										/>
-									)}
-								</CardActions>
-							</Card>
-						</Grid>
-					);
-				})}
+										{ele.is_my_post && (
+											<CustomButton
+												width={120}
+												height={40}
+												fontSize={'xxs'}
+												color={'BEIGE'}
+												textColor={'BLACK'}
+												text={'응답글 보기'}
+												onClick={goToDetailResponse}
+											/>
+										)}
+									</CardActions>
+								</Card>
+							</Grid>
+						);
+					})}
 			</Grid>
 		</Box>
 	);
