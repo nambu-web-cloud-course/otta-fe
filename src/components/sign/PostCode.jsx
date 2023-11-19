@@ -27,7 +27,7 @@ const PostCode = props => {
 	};
 
 	return (
-		<div>
+		<div className='box'>
 			<DaumPostcode className="postmodal" autoClose onComplete={complete} />
 		</div>
 	);

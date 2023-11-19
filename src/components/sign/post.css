@@ -1,9 +1,17 @@
 .postmodal {
 	background: rgba(0, 0, 0, 0.7);
-	position: fixed;
-	left: 5ch;
-	top: 5ch;
-	/* height: 100%;
-	width: 100%; */
+	/* position: fixed; */
+	/* left: 0;
+	top: 20ch;
+	height: 100ch;
+	width: 100ch; */
 	border: 1px solid gray;
+	z-index: 100;
+}
+.box {
+	width: 500px;
+	position:fixed;
+	left:500px;
+	top:400px;
+	z-index:100;
 }

@@ -11,6 +11,7 @@ import SideBar from './components/layout/SideBar';
 import NanumList from './pages/NanumList';
 import NanumDetail from './pages/NanumDetail';
 import MyCommentList from './pages/MyCommentList';
+import CreateComment from './pages/CreateComment';
 
 const App = () => {
 	return (
@@ -26,6 +27,7 @@ const App = () => {
 					<Route path="list" element={<NanumList />} />
 					<Route path="detail" element={<NanumDetail />} />
 					<Route path="create-post" element={<CreatePost />} />
+					<Route path="list/comment" element={<CreateComment />} />
 				</Route>
 				<Route path="my-page/:userId">
 					<Route element={<SideBar />}>
