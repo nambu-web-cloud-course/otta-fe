@@ -1,130 +1,260 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Title } from '../components/common/Title';
 import {
 	TextField,
-	Grid,
 	Button,
 	lighten,
 	styled,
 	ImageList,
 	ImageListItem,
 	Box,
-	ListItem,
+	Paper,
 } from '@mui/material';
+import DragAndDropZone from '../components/createPost/DragAndDropZone';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CustomButton from '../components/common/CustomButton';
+import { useNavigateTo } from '../routes/navigate';
+import theme from '../styles/theme';
+import client from '../hooks/api/client';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function CreatePost() {
+	const goTo = useNavigateTo();
 	const [post, setPost] = useState({});
-	const [imgs, setImgs] = useState([]);
+	const [imageInfo, setImageInfo] = useState([]);
+	const [trySubmit, setTrySubMit] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
-	const handleChange = e => {
-		const { name, value, files } = e.target;
-		console.log('name', name, 'value', value, 'files', files);
-		if (name === 'file') {
-			console.log('files[0]', files[0]);
-			// setImgs([...imgs, files && files[0]]);
-			setImgs([...imgs, files && URL.createObjectURL(files[0])]);
-			console.log(URL.createObjectURL(files[0]));
-			return;
+	const isTitleEmpty = useMemo(
+		() => trySubmit && (!post.title || post.title.length === 0),
+		[post.title, trySubmit],
+	);
+	const isContentEmpty = useMemo(
+		() => trySubmit && (!post.content || post.content.length === 0),
+		[post.content, trySubmit],
+	);
+	const isImageEmpty = useMemo(() => trySubmit && imageInfo.length === 0, [imageInfo, trySubmit]);
+
+	const onUploadImage = async fileInfo => {
+		if (imageInfo.length === 5) {
+			alert('이미지는 5장까지만 첨부 가능해요');
+		} else {
+			setImageInfo([...imageInfo, { file: fileInfo, url: URL.createObjectURL(fileInfo) }]);
 		}
+	};
+
+	const onChangeTextField = async e => {
+		const { name, value } = e.target;
 		setPost(post => ({ ...post, [name]: value }));
 	};
 
-	const handleSubmit = e => {
+	const onDeleteImage = deletedIdx => {
+		setImageInfo(prev => prev.filter((_, idx) => idx !== deletedIdx));
+	};
+
+	const handleSubmit = async e => {
 		e.preventDefault();
+		setTrySubMit(true);
+		if (isTitleEmpty || isContentEmpty || isImageEmpty) {
+			alert('업로드 조건을 만족하지 못했어요. 다시 한 번 확인해주세요.');
+			return;
+		}
+
+		setIsLoading(true);
+		try {
+			const { data } = await client.post('/nanum-create-post', post);
+			const { post_id } = data.data;
+
+			const formData = new FormData();
+			imageInfo.forEach(image => {
+				formData.append('files', image.file, image.file.name);
+			});
+
+			const { data: storage_url_list } = await client.post('/upload/images', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data;',
+				},
+				timeout: 30000,
+			});
+
+			await client.post('/nanum-create-post/image', {
+				post_id: post_id,
+				image_url_list: storage_url_list.data,
+			});
+
+			setIsLoading(false);
+			goTo(`/nanum/detail?postId=${post_id}`);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const handleCancel = () => {
-		setPost({});
-		setImgs([]);
+		goTo('/nanum/list');
 	};
+
 	return (
-		<Box sx={{ width: 800 }}>
-			<Title text={'나눔 게시글 작성'} />
-
-			{/* <Addform onSubmit={handleSubmit}> */}
-			<TextField
-				sx={{ mb: 5 }}
-				type="text"
-				name="title"
-				required
-				fullWidth
-				value={post.title ?? ''}
-				label="제목"
-				variant="standard"
-				onChange={handleChange}
-			/>
-			<Box>
-				<ImageList
-					cols={5}
-					gap={8}
-					sx={{ width: 800, height: 200, overflow: 'hidden' }}
-					rowHeight={164}
+		<>
+			{isLoading && (
+				<Paper
+					sx={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						width: '100%',
+						height: '100%',
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
+						background: 'rgba(217, 217, 217, 0.46)',
+						zIndex: 10,
+					}}
 				>
-					{imgs.map(image => (
-						<ImageListItem key={image.id}>
-							<img src={image} loading="lazy" />
-						</ImageListItem>
-					))}
-				</ImageList>
+					<CircularProgress />
+				</Paper>
+			)}
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					marginLeft: 20,
+					marginRight: 20,
+					marginBottom: 20,
+				}}
+			>
+				<Title text={'나눔 게시글 작성'} />
+				<TextField
+					sx={{ mb: 5 }}
+					type="text"
+					name="title"
+					fullWidth
+					value={post.title ?? ''}
+					label="제목"
+					variant="standard"
+					onChange={onChangeTextField}
+					error={isTitleEmpty}
+					id={isTitleEmpty ? 'outlined-error-helper-text' : ''}
+					helperText="필수 입력 항목이에요"
+				/>
+				<Box
+					sx={{
+						display: 'flex',
+						justifyContent: 'center',
+						gap: '60px',
+						minWidth: 1000,
+						minHeight: '530px',
+					}}
+				>
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							width: '50%',
+							textAlign: 'left',
+						}}
+					>
+						<SubTitle>기부 내용</SubTitle>
+						<TextField
+							sx={{ border: theme.colors.DARK_GRAY, width: '100%' }}
+							type="text"
+							name="content"
+							placeholder="<작성 가이드>&#13;&#10;글에는 옷의 사이즈, 옷의 유형, 사용감 등 자세하게 알려주세요.&#13;&#10;첨부 이미지는 1장 필수 업로드 해주세요."
+							variant="outlined"
+							multiline
+							value={post.content ?? ''}
+							rows={22}
+							onChange={onChangeTextField}
+							error={isContentEmpty}
+							id={isContentEmpty ? 'outlined-error-helper-text' : ''}
+						/>
+					</Box>
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							width: '50%',
+							textAlign: 'left',
+							justifyContent: 'space-between',
+						}}
+					>
+						<Box>
+							<SubTitle>첨부 이미지</SubTitle>
+							<DragAndDropZone onFileUpload={onUploadImage} />
+							<ImageList cols={5} gap={8} rowHeight={90}>
+								{imageInfo.map((image, idx) => (
+									<Box
+										sx={{
+											display: 'flex',
+											flexDirection: 'column',
+											alignItems: 'center',
+											gap: '10px',
+										}}
+										key={`${image.file.name}-${image.url}`}
+									>
+										<ImageListItem>
+											<img src={image.url} loading="lazy" />
+										</ImageListItem>
+										<CustomButton
+											width={36}
+											height={28}
+											fontSize={'xs'}
+											color={'DARK_ORANGE'}
+											textColor={'WHITE'}
+											text={<DeleteIcon />}
+											onClick={() => onDeleteImage(idx)}
+										/>
+									</Box>
+								))}
+							</ImageList>
+						</Box>
+						<Box>
+							<SubmitButton sx={{ mt: 5 }} onClick={handleSubmit}>
+								글 작성 완료하기
+							</SubmitButton>
+							<CancelButton sx={{ mt: 2 }} onClick={handleCancel}>
+								글 작성 취소하기
+							</CancelButton>
+						</Box>
+					</Box>
+				</Box>
 			</Box>
-			{/* {imgs &&
-					imgs.map(image => {
-						return <img key={image.id} src={image} alt="image" width="200px" />;
-					})} */}
-			{/* {imgs && <img src={URL.createObjectURL(imgs)} alt="image" width="200px" />} */}
-
-			{/* {imgs &&
-					imgs.forEach(image => {
-						<img src={URL.createObjectURL(image)} alt="image" width="200px" />;
-					})} */}
-			<Grid container sx={{ mt: 5 }}>
-				<Grid item xs>
-					<ContentTextField
-						name="content"
-						placeholder="내용을 입력하세요"
-						multiline
-						variant="outlined"
-						value={post.content ?? ''}
-						required
-						rows={12}
-						onChange={handleChange}
-					/>
-				</Grid>
-				<Grid item>
-					<ListItem>
-						<TextField type="file" accept="image/*" name="file" required onChange={handleChange} />
-					</ListItem>
-					<ListItem>
-						<SignUpButton variant="contained" sx={{ mt: 5 }} onClick={handleSubmit}>
-							글 작성 완료하기
-						</SignUpButton>
-					</ListItem>
-					<ListItem>
-						<SignUpButton variant="contained" sx={{ mt: 2 }} onClick={handleCancel}>
-							글 작성 취소하기
-						</SignUpButton>
-					</ListItem>
-				</Grid>
-			</Grid>
-			{/* </Addform> */}
-		</Box>
+		</>
 	);
 }
 
-const SignUpButton = styled(Button)(({ theme }) => ({
-	mb: 5,
-	mt: 5,
-	color: theme.colors.WHITE,
-	fontSize: theme.font_sizes.sm,
-	fontWeight: 'bold',
-	backgroundColor: theme.colors.DARK_YELLOW,
-	'&:hover': {
-		backgroundColor: lighten(theme.colors.DARK_YELLOW, 0.3),
-	},
-}));
-// const Addform = styled('form')`
-// 	// width: 150%;
-// `;
-const ContentTextField = styled(TextField)`
-	width: 100%;
-`;
+const SubmitButton = styled(Button)(({ theme }) => {
+	return {
+		width: '100%',
+		height: '42px',
+		color: theme.colors.WHITE,
+		fontSize: theme.font_sizes.xs,
+		fontWeight: 'bold',
+		backgroundColor: theme.colors.DARK_YELLOW,
+		'&:hover': {
+			backgroundColor: lighten(theme.colors.DARK_YELLOW, 0.3),
+		},
+	};
+});
+
+const CancelButton = styled(Button)(({ theme }) => {
+	return {
+		width: '100%',
+		height: '42px',
+		color: theme.colors.WHITE,
+		fontSize: theme.font_sizes.xs,
+		fontWeight: 'bold',
+		backgroundColor: theme.colors.DARK_GRAY,
+		'&:hover': {
+			backgroundColor: lighten(theme.colors.DARK_GRAY, 0.3),
+		},
+	};
+});
+
+const SubTitle = styled('span')(({ theme }) => {
+	return {
+		fontSize: theme.font_sizes.sm,
+		fontWeight: 'bold',
+		textAlign: 'left',
+	};
+});
