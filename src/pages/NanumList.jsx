@@ -67,7 +67,11 @@ const NanumList = () => {
 						return (
 							<Grid key={ele.id}>
 								<Card sx={{ maxWidth: 360 }} onClick={() => goTo(`/nanum/detail?postId=${ele.id}`)}>
-									<CardMedia sx={{ height: 140 }} image={ele.thumbnail_url} title={ele.title} />
+									<CardMedia
+										sx={{ height: 140, width: 360 }}
+										image={ele.thumbnail_url}
+										title={ele.title}
+									/>
 									<CardContent sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 										<StyledDateTypo>{ele.createdAt}</StyledDateTypo>
 										<StyledTitle>{ele.title}</StyledTitle>
