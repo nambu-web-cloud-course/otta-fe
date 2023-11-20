@@ -9,14 +9,14 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PostCode from '../components/sign/PostCode.jsx';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default function SignUp() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [check_password, setCheckPassword] = useState('');
 	const [name, setName] = useState('');
-	const [nickname, setNickname] = useState('');
+	const [nick_name, setNickname] = useState('');
 	const [phone, setPhone] = useState('');
 	const [addr, setAddr] = useState({
 		address: '',
@@ -89,13 +89,51 @@ export default function SignUp() {
 	const handleComplete = () => {
 		setPopup(!popup);
 	};
+
+	const handleSubmit = async () => {
+	
+
+		try {
+			const response = await axios.post('http://localhost:3001/auth/sign_up',  { 
+				data: {
+					email: email,
+					password: password,
+					name: name,
+					nick_name: nick_name,
+					addr: addr.address,
+					addr_detail: addr_detail,
+					phone: phone,
+
+				},
+				header: {
+
+				}
+			});
+			console.log('response', response);
+			if (response.ok) {
+				console.log('회원등록 성공');
+				
+			} else {
+				console.error('회원등록 실패');
+			}
+		} catch (error) {
+			console.error('회원 등록 중 Error:', error);
+		}
+	};
+
+	
 	const onClickSignUp = () => {
 		console.log(
 			`아이디: ${email} 비밀번호: ${password} 비밀번호확인: ${check_password} 
-			이름: ${name} 닉네임: ${nickname} 핸드폰:${phone}  
+			이름: ${name} 닉네임: ${nick_name} 핸드폰:${phone}  
 		  주소:${addr.address} ${addr_detail} `,
 		);
+		if((error || pw_error) || (email & password & check_password & name & nick_name & phone & addr.address & addr_detail ) ){
+			alert('빠지거나 잘못 입력한 것이 없는지 확인해주세요');
+		} 
+		handleSubmit();
 	};
+
 
 	return (
 		<>
@@ -201,7 +239,7 @@ export default function SignUp() {
 								type="submit"
 								onClick={handleComplete}
 								variant="contained"
-								sx={{ mt: 2, marginLeft: 1 }}
+								sx={{ mt: 5, marginLeft: 1 }}
 							>
 								주소찾기
 							</SignUpButton>
