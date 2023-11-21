@@ -10,8 +10,8 @@
 }
 .box {
 	width: 500px;
-	position:fixed;
-	left:500px;
-	top:400px;
-	z-index:100;
+	position: absolute;
+	left: 500px;
+	top: 400px;
+	z-index: 100;
 }

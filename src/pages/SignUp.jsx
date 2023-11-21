@@ -79,7 +79,7 @@ export default function SignUp() {
 	const handleAddr = e => {
 		setAddr({
 			...addr,
-			[e.target.name]: e.target.value,
+			address: e.target.value,
 		});
 	};
 	const handleAddrDetail = e => {
@@ -91,54 +91,50 @@ export default function SignUp() {
 	};
 
 	const handleSubmit = async () => {
-	
-
 		try {
-			const response = await axios.post('http://localhost:3001/auth/sign_up',  { 
-				data: {
-					email: email,
-					password: password,
-					name: name,
-					nick_name: nick_name,
+			const response = await axios.post(
+				'http://localhost:3001/auth/sign_up',
+				{
+					email,
+					password,
+					name,
+					nick_name,
 					addr: addr.address,
 					addr_detail: addr_detail,
 					phone: phone,
-
 				},
-				header: {
-
-				}
-			});
+				{
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
 			console.log('response', response);
-			if (response.ok) {
-				console.log('회원등록 성공');
-				
+			if (response.data.success) {
+				alert('회원가입 완료되었습니다.');
 			} else {
-				console.error('회원등록 실패');
+				if (response.data.message) {
+					alert(response.data.message);
+				}
 			}
 		} catch (error) {
 			console.error('회원 등록 중 Error:', error);
 		}
 	};
 
-	
 	const onClickSignUp = () => {
 		console.log(
 			`아이디: ${email} 비밀번호: ${password} 비밀번호확인: ${check_password} 
 			이름: ${name} 닉네임: ${nick_name} 핸드폰:${phone}  
 		  주소:${addr.address} ${addr_detail} `,
 		);
-		if((error || pw_error) || (email & password & check_password & name & nick_name & phone & addr.address & addr_detail ) ){
-			alert('빠지거나 잘못 입력한 것이 없는지 확인해주세요');
-		} 
-		handleSubmit();
+		// if((error || pw_error) || (email & password & check_password & name & nick_name & phone & addr.address & addr_detail ) ){
+		// 	alert('빠지거나 잘못 입력한 것이 없는지 확인해주세요');
+		// }
 	};
-
 
 	return (
 		<>
 			<Container component="main" maxWidth="sm" sx={{ border: 0.5, borderRadius: 1, padding: 6 }}>
-				<Box sx={{ ml: 3, mr: 3, pb: 3 }}>
+				<Box component="form" onSubmit={handleSubmit} sx={{ ml: 3, mr: 3, pb: 3 }}>
 					<Grid container sx={{ borderBottom: 1, mb: 4 }}>
 						<Grid item>
 							<Avatar sx={{ m: 1, mt: 3.5, bgcolor: '#545473' }}>
@@ -252,6 +248,7 @@ export default function SignUp() {
 						<SignUpButton
 							type="submit"
 							onClick={onClickSignUp}
+							onSubmit={handleSubmit}
 							variant="contained"
 							fullWidth
 							sx={{ mt: 5, mb: 5 }}
