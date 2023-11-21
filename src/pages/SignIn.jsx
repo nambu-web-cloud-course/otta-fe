@@ -38,7 +38,6 @@ export default function SignIn() {
 
 	const onClickLogin = async () => {
 		try {
-			console.log(email, password);
 			const response = await axios.post(
 				process.env.REACT_APP_SERVER + '/auth/sign_in',
 				{
@@ -49,16 +48,14 @@ export default function SignIn() {
 					headers: { 'Content-Type': 'application/json' },
 				},
 			);
-			console.log('response', response);
 			if (response.data.success) {
 				localStorage.setItem('token', response.data.token);
-
 				alert(`${email}님 로그인 되었습니다`);
 			} else {
-				console.error('로그인 실패');
+				alert('로그인 실패');
 			}
 		} catch (error) {
-			console.error('로그인 중 Error:', error);
+			alert('로그인 중 Error:', error);
 		}
 	};
 

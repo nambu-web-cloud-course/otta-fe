@@ -24,10 +24,8 @@ export default function SignUp() {
 	const [addr_detail, setAddrdetail] = useState('');
 	const [error, setError] = useState(false);
 	const [err_msg, setErrMsg] = useState('');
-	//email& 비밀번호 정규식
 	const emailRegEx =
 		/^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
-	// const passwordRegEx = /^[A-Za-z0-9]{8,20}$/
 	const [pw_error, setPwError] = useState(false);
 	const [pw_err_msg, setPwErrMsg] = useState('');
 
@@ -116,20 +114,11 @@ export default function SignUp() {
 				}
 			}
 		} catch (error) {
-			console.error('회원 등록 중 Error:', error);
+			alert('회원 등록 중 에러 발생');
 		}
 	};
 
-	const onClickSignUp = () => {
-		console.log(
-			`아이디: ${email} 비밀번호: ${password} 비밀번호확인: ${check_password} 
-			이름: ${name} 닉네임: ${nick_name} 핸드폰:${phone}  
-		  주소:${addr.address} ${addr_detail} `,
-		);
-		// if((error || pw_error) || (email & password & check_password & name & nick_name & phone & addr.address & addr_detail ) ){
-		// 	alert('빠지거나 잘못 입력한 것이 없는지 확인해주세요');
-		// }
-	};
+	const onClickSignUp = () => {};
 
 	return (
 		<>
