@@ -40,7 +40,7 @@ export default function SignIn() {
 		try {
 			console.log(email, password);
 			const response = await axios.post(
-				'http://localhost:3001/auth/sign_in',
+				process.env.REACT_APP_SERVER + '/auth/sign_in',
 				{
 					email,
 					password,

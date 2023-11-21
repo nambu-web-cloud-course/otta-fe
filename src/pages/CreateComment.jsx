@@ -57,7 +57,7 @@ export default function CreateComment() {
 
 		try {
 			const response = await axios.post(
-				'http://localhost:3001/nanum/list/comment',
+				process.env.REACT_APP_SERVER + '/nanum/list/comment',
 				{
 					title: title,
 					content: content,
