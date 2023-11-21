@@ -12,6 +12,7 @@ import NanumList from './pages/NanumList';
 import NanumDetail from './pages/NanumDetail';
 import MyCommentList from './pages/MyCommentList';
 import CreateComment from './pages/CreateComment';
+import NotFound from './pages/NotFound';
 
 const App = () => {
 	return (
@@ -36,6 +37,7 @@ const App = () => {
 						<Route path="comment-list" element={<MyCommentList />} />
 					</Route>
 				</Route>
+				<Route path="*" element={<NotFound />} />
 			</Route>
 		</Routes>
 	);
