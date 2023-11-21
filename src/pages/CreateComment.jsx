@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CustomButton from '../components/common/CustomButton';
 import Grid from '@mui/material/Grid';
 import PostCode from '../components/sign/PostCode.jsx';
 import { styled } from '@mui/material';
 import axios from 'axios';
-// import { useLocation } from 'react-router-dom';
-
-
-// import { styled } from '@mui/material/styles';
 
 export default function CreateComment() {
 	const [title, setTitle] = useState('');
@@ -23,31 +18,26 @@ export default function CreateComment() {
 
 	const [popup, setPopup] = useState(false);
 
-	// const location = useLocation();
-	// const queryParams = new URLSearchParams(location.search);
-	// const post_title = queryParams.get('title');
-	// const post_id = queryParams.get('id');
-
-	const handleTitleChange = (e) => {
+	const handleTitleChange = e => {
 		setTitle(e.target.value);
 	};
 
-	const handleAddrChange = (e) => {
+	const handleAddrChange = e => {
 		setAddr({
 			...addr,
 			address: e.target.value,
 		});
 	};
 
-	const handleAddrDetailChange = (e) => {
+	const handleAddrDetailChange = e => {
 		setAddrDetail(e.target.value);
 	};
 
-	const handlePhoneChange = (e) => {
+	const handlePhoneChange = e => {
 		setPhone(e.target.value);
 	};
-   
-	const handleContentChange = (e) => {
+
+	const handleContentChange = e => {
 		setContent(e.target.value);
 	};
 
@@ -58,27 +48,27 @@ export default function CreateComment() {
 	const handleSubmit = async () => {
 		console.log('title', title);
 		console.log('content', content);
-		console.log('phone',phone);
+		console.log('phone', phone);
 		console.log('addr', addr.address);
 		console.log('addr_detail', addr_detail);
 
 		try {
-			const response = await axios.post('http://localhost:3001/nanum/list/comment', { 
-				data: {
+			const response = await axios.post(
+				process.env.REACT_APP_SERVER + '/nanum/list/comment',
+				{
 					title: title,
 					content: content,
 					phone: phone,
 					addr: addr.address,
-					addr_detail :addr_detail
+					addr_detail: addr_detail,
 				},
-				header: {
+				{
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
 
-				}
-			});
-			console.log('response', response);
-			if (response.ok) {
-				console.log('응답글 작성 성공');
-				
+			if (response.data.success) {
+				alert('나눔 요청이 등록되었습니다.');
 			} else {
 				console.error('응답글 작성 실패');
 			}
@@ -87,37 +77,21 @@ export default function CreateComment() {
 		}
 	};
 
-
-    
-
-
-
-
-
 	return (
-
 		<Box
 			sx={{
-				'width':700,
-				'padding':2,
-				'display': 'flex',
-				'flexDirection': 'column',
-				'alignItems': 'center',
+				width: 700,
+				padding: 2,
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
 				'& .MuiTextField-root': { width: '35ch' },
-				
 			}}
 		>
 			<h1>새 주인이 되어보세요</h1>
 			<Grid container>
 				<Grid item xs>
-					<input				
-						label="나눔글제목"
-						type="text"
-						
-						// variant="filled"
-						// fullWidth
-						// sx={{mb:4,borderBottom:0}}
-           		/>
+					<input label="나눔글제목" type="text" />
 				</Grid>
 				<Grid item>
 					<CustomButton
@@ -131,23 +105,20 @@ export default function CreateComment() {
 				</Grid>
 			</Grid>
 			<Box
-
 				component="form"
 				sx={{
-					'width':500,
-					'maxWidth': '100%',
-					'& .MuiTextField-root': { m: 0  },
-					
-					'border': 0.5,
-					'padding':5,
-					'display': 'flex',
-					'flexDirection': 'column',
-					'borderRadius' : 3,
-					// 'alignItems' : 'center'
+					width: 500,
+					maxWidth: '100%',
+					'& .MuiTextField-root': { m: 0 },
+
+					border: 0.5,
+					padding: 5,
+					display: 'flex',
+					flexDirection: 'column',
+					borderRadius: 3,
 				}}
 				noValidate
 				autoComplete="off"
-				
 			>
 				<CommentTextField
 					required
@@ -159,9 +130,8 @@ export default function CreateComment() {
 					variant="standard"
 					fullWidth
 					onChange={handleTitleChange}
-
 				/>
-				<Grid container >
+				<Grid container>
 					<Grid item xs>
 						<CommentTextField
 							name="addr"
@@ -171,7 +141,6 @@ export default function CreateComment() {
 							fullWidth
 							value={addr.address}
 							onChange={handleAddrChange}
-
 						/>
 					</Grid>
 					<Grid item>
@@ -183,10 +152,8 @@ export default function CreateComment() {
 							textColor={'WHITE'}
 							text={'직접 주소 입력'}
 							onClick={handleComplete}
-                            
 						/>
 						{popup && <PostCode address={addr.address} setAddress={setAddr}></PostCode>}
-                        
 					</Grid>
 				</Grid>
 				<CommentTextField
@@ -197,8 +164,7 @@ export default function CreateComment() {
 					variant="standard"
 					onChange={handleAddrDetailChange}
 					value={addr_detail}
-					sx={{mb:2}}
-
+					sx={{ mb: 2 }}
 				/>
 				<CommentTextField
 					name="phone"
@@ -206,19 +172,19 @@ export default function CreateComment() {
 					type="text"
 					variant="standard"
 					fullWidth
-					sx={{mb:2}}
+					sx={{ mb: 2 }}
 					onChange={handlePhoneChange}
 				/>
 				<CommentTextField
 					required
 					name="content"
 					multiline
-					rows= "8"
+					rows="8"
 					label="나눔 요청 내용"
 					type="text"
 					variant="standard"
 					fullWidth
-					sx={{mb:2}}
+					sx={{ mb: 2 }}
 					onChange={handleContentChange}
 				/>
 				<CustomButton
@@ -233,9 +199,7 @@ export default function CreateComment() {
 			</Box>
 		</Box>
 	);
-      
-};
-
+}
 
 const CommentTextField = styled(TextField)(({ theme }) => ({
 	'& label.Mui-focused': {

@@ -8,7 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default function SignIn() {
 	const [email, setEmail] = useState('');
@@ -36,8 +36,27 @@ export default function SignIn() {
 		setPassword(e.target.value);
 	};
 
-	const onClickLogin = () => {
-		console.log(`email: ${email} password: ${password}`);
+	const onClickLogin = async () => {
+		try {
+			const response = await axios.post(
+				process.env.REACT_APP_SERVER + '/auth/sign_in',
+				{
+					email,
+					password,
+				},
+				{
+					headers: { 'Content-Type': 'application/json' },
+				},
+			);
+			if (response.data.success) {
+				localStorage.setItem('token', response.data.token);
+				alert(`${email}님 로그인 되었습니다`);
+			} else {
+				alert('로그인 실패');
+			}
+		} catch (error) {
+			alert('로그인 중 Error:', error);
+		}
 	};
 
 	return (
@@ -71,13 +90,12 @@ export default function SignIn() {
 
 						<LoginTextField
 							margin="normal"
-							// name="password"
+							name="password"
 							required
 							fullWidth
 							// id="password"
 							label="비밀번호"
 							type="password"
-							// value={password}
 							onChange={handlePassword}
 							autoComplete="current-password"
 						/>
