@@ -37,8 +37,10 @@ export const useApi = (url, method, options) => {
 				const { data } = await client.delete(url, options);
 				setData(data.data);
 			}
+			setError(null);
 		} catch (error) {
 			setError(error);
+			setData(null);
 		}
 
 		setIsLoading(false);

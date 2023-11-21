@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { createRef, forwardRef, memo, useState } from 'react';
+import { createRef, forwardRef, memo, useEffect, useState } from 'react';
 import { Title } from '../components/common/Title';
 import { FixedSizeList, VariableSizeList, areEqual } from 'react-window';
 import {
@@ -11,9 +10,7 @@ import {
 	ListItemText,
 	styled,
 } from '@mui/material';
-import { mock_mypost_list_data } from '../data/myPostListData';
 import memoize from 'memoize-one';
-import { mock_mypost_comment_list_data } from '../data/myPostCommentListData';
 
 import NotesIcon from '@mui/icons-material/Notes';
 import SendIcon from '@mui/icons-material/Send';
@@ -21,6 +18,8 @@ import { useMemo } from 'react';
 import SpanWithCopy from '../components/myPostList/SpanWithCopy';
 import theme from '../styles/theme';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../hooks/api/useApi';
+import client from '../hooks/api/client';
 
 const GAP_SIZE = 10;
 const PARCEL_CJ_URL = 'https://www.cjlogistics.com/ko/tool/parcel/reservation-general';
@@ -32,7 +31,7 @@ const PostRow = memo(({ data, index, style }) => {
 	const { id, title } = items[index];
 
 	const onClickListItem = () => {
-		clickPost();
+		clickPost({ id: id });
 	};
 
 	const onClickGoToPost = e => {
@@ -73,7 +72,6 @@ const CommentRow = memo(({ data, index, style }) => {
 	const {
 		id,
 		title,
-		user_id,
 		created_at,
 		content,
 		phone,
@@ -81,6 +79,7 @@ const CommentRow = memo(({ data, index, style }) => {
 		addr_detail,
 		is_picked,
 		is_clicked,
+		user_nick_name,
 	} = items[index];
 
 	const onClickListItem = () => {
@@ -112,7 +111,11 @@ const CommentRow = memo(({ data, index, style }) => {
 		>
 			<ListItemButton
 				onClick={onClickListItem}
-				sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'space-between',
+				}}
 			>
 				<Box sx={{ display: 'flex', width: '100%' }}>
 					<ListItemIcon sx={{ display: 'flex', paddingTop: '10px' }}>
@@ -127,13 +130,21 @@ const CommentRow = memo(({ data, index, style }) => {
 				</Box>
 
 				{is_clicked && (
-					<Box sx={{ display: 'flex', flexDirection: 'column', paddingLeft: '56px', gap: '12px' }}>
-						<CommentUserId>{user_id}</CommentUserId>
+					<Box
+						sx={{
+							display: 'flex',
+							width: '80%',
+							flexDirection: 'column',
+							marginLeft: '20px',
+							gap: '12px',
+						}}
+					>
+						<CommentUserId>{user_nick_name}</CommentUserId>
 						<div>{content}</div>
 						<SpanWithCopy type="phone" text={phone} />
 						<SpanWithCopy type="address" text={`${addr} ${addr_detail}`} />
 						{!is_picked && <Button onClick={onClickCommentCheck}>요청 수락</Button>}
-						{is_picked && (
+						{!!is_picked && (
 							<>
 								<div>이미 수락된 응답이에요</div>
 								<Button onClick={() => onClickOpenNewTab(PARCEL_CJ_URL)}>
@@ -163,48 +174,88 @@ const createCommentData = memoize((items, clickComment, clickCommentCheck) => ({
 }));
 
 const MyPostList = () => {
-	const [postList, setPostList] = useState(mock_mypost_list_data);
+	const [postList, setPostList] = useState([]);
 	const [commentList, setCommentList] = useState([]);
+	const [clickedPostId, setClickedPostId] = useState(null);
+
+	const { data: postListData, triggerFetch: triggerFetchPostListData } = useApi(
+		'/my-page/post-list',
+		'GET',
+	);
+
+	const {
+		data: commentListData,
+		error: commentListDataError,
+		triggerFetch: triggerFetchCommentListData,
+	} = useApi(`/my-page/post-list/comment-list?post_id=${clickedPostId}`, 'GET');
 
 	const commentRef = createRef();
 
-	const onClickPost = () => {
-		setCommentList(mock_mypost_comment_list_data);
+	const onClickPost = data => {
+		setClickedPostId(data.id);
+		triggerFetchCommentListData();
 		commentRef.current.resetAfterIndex(0);
 	};
 
 	const onClickComment = data => {
-		const setCommentIsClicked = commentList.map(ele => {
+		const setCommentIsClicked = commentList.map((ele, idx) => {
 			if (ele.id === data.id) {
-				return { ...ele, is_clicked: true };
+				return { ...ele, is_clicked: true, orderIdx: idx };
 			}
-			return { ...ele, is_clicked: false };
+			return { ...ele, is_clicked: false, orderIdx: idx };
 		});
 		setCommentList(setCommentIsClicked);
 		commentRef.current.resetAfterIndex(0);
 	};
 
-	const onClickCommentCheck = data => {
-		const setCommentCheckIsClicked = commentList.map(ele => {
-			if (ele.id === data.id) {
-				return { ...ele, is_picked: true };
+	const onClickCommentCheck = async clickedData => {
+		try {
+			await client.put(
+				`/my-page/post-list/check?post_id=${clickedPostId}&comment_id=${clickedData.id}`,
+			);
+			const setCommentCheckIsClicked = commentList.map(ele => {
+				if (ele.id === clickedData.id) {
+					return { ...ele, is_picked: true };
+				}
+				return ele;
+			});
+			setCommentList(setCommentCheckIsClicked);
+		} catch (err) {
+			if (err.response.data.message === '이미 응답 확인된 나눔글입니다.') {
+				alert('이미 다른 응답글을 확인했어요.');
 			}
-			return ele;
-		});
-		setCommentList(setCommentCheckIsClicked);
+		}
 		commentRef.current.resetAfterIndex(0);
 	};
 
 	const clickedComment = useMemo(() => {
-		return commentList.filter(ele => ele.is_clicked).map(ele => ele.id)[0];
-	}, [commentList]);
+		return commentList.filter(ele => ele.is_clicked).map(ele => ele.orderIdx)[0];
+	}, [commentList, clickedPostId]);
 
 	const postData = createPostData(postList, onClickPost);
 	const commentData = createCommentData(commentList, onClickComment, onClickCommentCheck);
 
 	const getItemSize = idx => {
-		return idx === clickedComment ? 350 : 90;
+		return idx === clickedComment ? 400 : 90;
 	};
+
+	useEffect(() => {
+		if (commentListData) {
+			setCommentList(commentListData);
+		} else {
+			setCommentList([]);
+		}
+	}, [commentListData]);
+
+	useEffect(() => {
+		if (postListData && postListData.length > 0) {
+			setPostList(postListData);
+		}
+	}, [postListData]);
+
+	useEffect(() => {
+		triggerFetchPostListData();
+	}, []);
 
 	return (
 		<div>
@@ -221,19 +272,23 @@ const MyPostList = () => {
 				>
 					{PostRow}
 				</FixedSizeList>
-
-				<VariableSizeList
-					ref={commentRef}
-					height={600}
-					width={500}
-					itemSize={getItemSize}
-					innerElementType={innerElementType}
-					itemCount={commentList.length}
-					overscanCount={5}
-					itemData={commentData}
-				>
-					{CommentRow}
-				</VariableSizeList>
+				<Box sx={{ width: '500px' }}>
+					{commentListDataError && commentList.length == 0 && (
+						<div>나눔글에 대한 응답글이 없습니다</div>
+					)}
+					<VariableSizeList
+						ref={commentRef}
+						height={600}
+						width={500}
+						itemSize={getItemSize}
+						innerElementType={innerElementType}
+						itemCount={commentList.length}
+						overscanCount={5}
+						itemData={commentData}
+					>
+						{CommentRow}
+					</VariableSizeList>
+				</Box>
 			</Box>
 		</div>
 	);
