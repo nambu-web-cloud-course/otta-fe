@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CustomButton from '../components/common/CustomButton';
 import Grid from '@mui/material/Grid';
 import PostCode from '../components/sign/PostCode.jsx';
 import { styled } from '@mui/material';
 import axios from 'axios';
-// import { useLocation } from 'react-router-dom';
-// import { styled } from '@mui/material/styles';
 
 export default function CreateComment() {
 	const [title, setTitle] = useState('');
@@ -94,14 +91,7 @@ export default function CreateComment() {
 			<h1>새 주인이 되어보세요</h1>
 			<Grid container>
 				<Grid item xs>
-					<input
-						label="나눔글제목"
-						type="text"
-
-						// variant="filled"
-						// fullWidth
-						// sx={{mb:4,borderBottom:0}}
-					/>
+					<input label="나눔글제목" type="text" />
 				</Grid>
 				<Grid item>
 					<CustomButton
@@ -126,7 +116,6 @@ export default function CreateComment() {
 					display: 'flex',
 					flexDirection: 'column',
 					borderRadius: 3,
-					// 'alignItems' : 'center'
 				}}
 				noValidate
 				autoComplete="off"
