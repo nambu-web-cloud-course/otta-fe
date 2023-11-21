@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-import { Outlet, useNavigate } from 'react-router-dom';
 import { Title } from '../components/common/Title';
 import {
 	Box,
@@ -56,11 +54,17 @@ const FindClothingBox = () => {
 	const [selectedLocation, setSelectedLocation] = useState({ x: null, y: null });
 	const [triggerPing, setTriggerPing] = useState(0);
 
+	const [inputValue, setInputValue] = useState('');
+
 	const [searchQuery, setSearchQuery] = useState({ district: '', region: '' });
 
-	const { data, isLoading, error, triggerFetch } = useApi('/find-clothing-box/addr', 'GET', {
+	const { data, error, triggerFetch } = useApi('/find-clothing-box/addr', 'GET', {
 		params: { district: searchQuery.district, region: searchQuery.region },
 	});
+
+	const onChangeInput = e => {
+		setInputValue(e.target.value);
+	};
 
 	const onClick = async e => {
 		e.preventDefault();
@@ -114,7 +118,8 @@ const FindClothingBox = () => {
 				</SearchButton>
 			</Box>
 			{/* //TODO: 추후 구현 예정 */}
-			{/* <Box
+			<Box sx={{ display: 'flex', justifyContent: 'center', mt: '10px', mb: '10px' }}>또는</Box>
+			<Box
 				component="form"
 				sx={{ width: 800, display: 'flex', gap: 1, marginTop: '10px' }}
 				noValidate
@@ -122,16 +127,17 @@ const FindClothingBox = () => {
 			>
 				<LocationTextField
 					id="outlined-basic"
-					label="찾을 주소를 검색해주세요"
+					label="집주소를 입력하면 근처 의류 수거함을 찾아드려요"
 					placeholder="ex. 서울특별시 구로구 구로2동"
 					variant="outlined"
 					fullWidth
 					onChange={onChangeInput}
+					value={inputValue}
 				/>
 				<SearchButton type="submit" fullWidth variant="contained" onClick={onClick}>
 					검색하기
 				</SearchButton>
-			</Box> */}
+			</Box>
 			{data && (
 				<Box sx={{ width: '100%', display: 'flex', marginTop: '30px' }}>
 					<Box sx={{ width: '100%', height: 400, maxWidth: 360 }}>
