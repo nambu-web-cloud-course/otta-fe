@@ -13,17 +13,18 @@ import { useNavigateTo } from '../routes/navigate';
 export default function CreateComment() {
 	const goTo = useNavigateTo();
 	const [title, setTitle] = useState('');
-	const [addr, setAddr] = useState({
-		address: '',
-	});
+	const [addr, setAddr] = useState('');
 	const [addr_detail, setAddrDetail] = useState();
 	const [phone, setPhone] = useState();
 	const [content, setContent] = useState('');
 	const [post_title, setPostTitle] = useState('');
 	const [popup, setPopup] = useState(false);
 	const [userId, setUserId] = useState('');
+	const [phone_error, setPhoneError] = useState(false);
+	const [phone_err_msg, setPhoneErrMsg] = useState('');
 	const { postId } = useParams();
 	const { data, error, triggerFetch } = useApi(`/nanum-post/detail?post_id=${postId}`, 'GET');
+	const phoneRegEx = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
 
 	useEffect(() => {
 		if (data) {
@@ -41,27 +42,15 @@ export default function CreateComment() {
 		setUserId(decodedToken.user_id);
 	}, []);
 
-	const handleTitleChange = e => {
-		setTitle(e.target.value);
-	};
-
-	const handleAddrChange = e => {
-		setAddr({
-			...addr,
-			address: e.target.value,
-		});
-	};
-
-	const handleAddrDetailChange = e => {
-		setAddrDetail(e.target.value);
-	};
-
-	const handlePhoneChange = e => {
-		setPhone(e.target.value);
-	};
-
-	const handleContentChange = e => {
-		setContent(e.target.value);
+	const handlePhone = e => {
+		if (!phoneRegEx.test(e.currentTarget.value)) {
+			setPhoneError(true);
+			setPhoneErrMsg('핸드폰번호 형식에 맞지 않습니다');
+		} else {
+			setPhoneError(false);
+			setPhoneErrMsg('');
+		}
+		setPhone(e.currentTarget.value);
 	};
 
 	const handleComplete = () => {
@@ -82,7 +71,7 @@ export default function CreateComment() {
 					title: title,
 					content: content,
 					phone: phone,
-					addr: addr.address,
+					addr: addr,
 					addr_detail: addr_detail,
 					post_id: postId,
 					user_id: userId,
@@ -97,10 +86,10 @@ export default function CreateComment() {
 				goTo(`/my-page/${userId}/comment-list`);
 				return;
 			} else {
-				console.error('응답글 작성 실패');
+				alert('응답글 작성 실패');
 			}
 		} catch (error) {
-			console.error('응답글 작성 중 Error:', error);
+			alert('응답글 작성 중 Error발생');
 		}
 	};
 
@@ -138,7 +127,6 @@ export default function CreateComment() {
 					width: 500,
 					maxWidth: '100%',
 					'& .MuiTextField-root': { m: 0 },
-
 					border: 0.5,
 					padding: 5,
 					display: 'flex',
@@ -151,24 +139,21 @@ export default function CreateComment() {
 				<CommentTextField
 					required
 					margin="normal"
-					name="title"
 					label="제목"
-					value={title ? title : '     '}
 					type="text"
 					variant="standard"
 					fullWidth
-					onChange={handleTitleChange}
+					onChange={e => setTitle(e.target.value)}
 				/>
 				<Grid container>
 					<Grid item xs>
 						<CommentTextField
-							name="addr"
 							label="주소"
 							type="text"
 							variant="standard"
 							fullWidth
-							value={addr.address}
-							onChange={handleAddrChange}
+							value={addr}
+							onChange={e => setAddr(e.target.value)}
 						/>
 					</Grid>
 					<Grid item>
@@ -181,31 +166,30 @@ export default function CreateComment() {
 							text={'직접 주소 입력'}
 							onClick={handleComplete}
 						/>
-						{popup && <PostCode address={addr.address} setAddress={setAddr}></PostCode>}
+						{popup && <PostCode address={addr} setAddress={setAddr}></PostCode>}
 					</Grid>
 				</Grid>
 				<CommentTextField
-					name="addr_detail"
 					label="상세주소"
 					type="text"
 					fullwidth
 					variant="standard"
-					onChange={handleAddrDetailChange}
+					onChange={e => setAddrDetail(e.target.value)}
 					value={addr_detail}
 					sx={{ mb: 2 }}
 				/>
 				<CommentTextField
-					name="phone"
 					label="연락처"
 					type="text"
 					variant="standard"
 					fullWidth
 					sx={{ mb: 2 }}
-					onChange={handlePhoneChange}
+					onChange={handlePhone}
+					error={phone_error}
+					helperText={phone_err_msg}
 				/>
 				<CommentTextField
 					required
-					name="content"
 					multiline
 					rows="8"
 					label="나눔 요청 내용"
@@ -213,10 +197,9 @@ export default function CreateComment() {
 					variant="standard"
 					fullWidth
 					sx={{ mb: 2 }}
-					onChange={handleContentChange}
+					onChange={e => setContent(e.target.value)}
 				/>
 				<CustomButton
-					id="test"
 					width={200}
 					height={60}
 					fontSize={'xs'}
