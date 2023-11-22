@@ -14,6 +14,7 @@ import {
 	tableCellClasses,
 } from '@mui/material';
 import { useApi } from '../hooks/api/useApi';
+import { convertToDate } from '../utils/convertDateFormat';
 
 const MyCommentList = () => {
 	const [commentList, setCommentList] = useState([]);
@@ -33,7 +34,7 @@ const MyCommentList = () => {
 			comment_detail_addr,
 		} = result;
 		return {
-			created_at: post_created_at,
+			created_at: convertToDate(post_created_at),
 			author: post_author,
 			title: post_title,
 			status: status_kor(post_status),

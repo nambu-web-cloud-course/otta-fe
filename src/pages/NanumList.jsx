@@ -5,6 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import CustomButton from '../components/common/CustomButton';
 import { useNavigateTo } from '../routes/navigate';
 import { useApi } from '../hooks/api/useApi';
+import { convertToDate } from '../utils/convertDateFormat';
 
 const NanumList = () => {
 	const goTo = useNavigateTo();
@@ -69,11 +70,15 @@ const NanumList = () => {
 								<Card sx={{ maxWidth: 360 }} onClick={() => goTo(`/nanum/detail?postId=${ele.id}`)}>
 									<CardMedia
 										sx={{ height: 140, width: 360 }}
-										image={ele.thumbnail_url}
+										image={
+											ele.thumbnail_url.length > 0
+												? ele.thumbnail_url
+												: process.env.REACT_APP_DEFAULT_IMAGE
+										}
 										title={ele.title}
 									/>
 									<CardContent sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-										<StyledDateTypo>{ele.createdAt}</StyledDateTypo>
+										<StyledDateTypo>{convertToDate(ele.createdAt)}</StyledDateTypo>
 										<StyledTitle>{ele.title}</StyledTitle>
 										<StyledContent>{ele.content}</StyledContent>
 									</CardContent>
