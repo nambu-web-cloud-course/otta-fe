@@ -1,0 +1,17 @@
+export const emoji_mapping_data = {
+	shorts: '🩳',
+	blouse: '👚',
+	gown: '🥼',
+	safevest: '🦺',
+	jumpsuit: '👘',
+	bikini: '👙',
+	onepiece: '🥻',
+	jacket: '🧥',
+	swimsuit: '🩱',
+	briefs: '🩲',
+	tshirt: '👕',
+	jeans: '👖',
+	necktie: '👔',
+	sleeveless: '🎽',
+	dress: '👗',
+};
