@@ -10,8 +10,10 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PostCode from '../components/sign/PostCode.jsx';
 import axios from 'axios';
+import { useNavigateTo } from '../routes/navigate';
 
 export default function SignUp() {
+	const goTo = useNavigateTo();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [check_password, setCheckPassword] = useState('');
@@ -89,6 +91,14 @@ export default function SignUp() {
 	};
 
 	const handleSubmit = async () => {
+		if (!email || !password || !name || !nick_name || !addr.address || !addr_detail || !phone) {
+			alert('비어 있는 항목을 모두 채워주세요');
+			return;
+		}
+		if (pw_error) {
+			alert('비밀번호가 일치하지 않습니다.');
+			return;
+		}
 		try {
 			const response = await axios.post(
 				process.env.REACT_APP_SERVER + '/auth/sign_up',
@@ -105,9 +115,9 @@ export default function SignUp() {
 					headers: { 'Content-Type': 'application/json' },
 				},
 			);
-			console.log('response', response);
 			if (response.data.success) {
-				alert('회원가입 완료되었습니다.');
+				alert('회원가입이 완료되었습니다.');
+				goTo('/sign-in');
 			} else {
 				if (response.data.message) {
 					alert(response.data.message);
@@ -117,8 +127,6 @@ export default function SignUp() {
 			alert('회원 등록 중 에러 발생');
 		}
 	};
-
-	const onClickSignUp = () => {};
 
 	return (
 		<>
@@ -236,7 +244,6 @@ export default function SignUp() {
 					<div>
 						<SignUpButton
 							type="submit"
-							onClick={onClickSignUp}
 							onSubmit={handleSubmit}
 							variant="contained"
 							fullWidth
