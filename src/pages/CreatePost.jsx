@@ -70,7 +70,6 @@ export default function CreatePost() {
 			})
 			.then(upload_result => {
 				const { data: storage_url_list } = upload_result;
-				console.log('storage_url_list: ', storage_url_list);
 				return client.post('/nanum-create-post/image', {
 					post_id: post_id,
 					image_url_list: storage_url_list.data,
