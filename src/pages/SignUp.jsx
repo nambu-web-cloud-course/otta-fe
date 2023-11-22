@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, lighten, styled } from '@mui/material';
@@ -11,6 +12,7 @@ import Container from '@mui/material/Container';
 import PostCode from '../components/sign/PostCode.jsx';
 import axios from 'axios';
 import { useNavigateTo } from '../routes/navigate';
+import client from '../hooks/api/client.js';
 
 export default function SignUp() {
 	const goTo = useNavigateTo();
@@ -90,7 +92,8 @@ export default function SignUp() {
 		setPopup(!popup);
 	};
 
-	const handleSubmit = async () => {
+	const handleSubmit = async e => {
+		e.preventDefault();
 		if (!email || !password || !name || !nick_name || !addr.address || !addr_detail || !phone) {
 			alert('비어 있는 항목을 모두 채워주세요');
 			return;
@@ -100,8 +103,8 @@ export default function SignUp() {
 			return;
 		}
 		try {
-			const response = await axios.post(
-				process.env.REACT_APP_SERVER + '/auth/sign_up',
+			const response = await client.post(
+				'/auth/sign_up',
 				{
 					email,
 					password,
@@ -117,7 +120,7 @@ export default function SignUp() {
 			);
 			if (response.data.success) {
 				alert('회원가입이 완료되었습니다.');
-				goTo(`/my-page/${response.id}/comment-list`);
+				goTo(`/my-page/${response.id}/post-list`);
 			} else {
 				if (response.data.message) {
 					alert(response.data.message);
@@ -242,13 +245,7 @@ export default function SignUp() {
 
 					<Typography>* 필수 입력사항입니다</Typography>
 					<div>
-						<SignUpButton
-							type="submit"
-							onSubmit={handleSubmit}
-							variant="contained"
-							fullWidth
-							sx={{ mt: 5, mb: 5 }}
-						>
+						<SignUpButton type="submit" variant="contained" fullWidth sx={{ mt: 5, mb: 5 }}>
 							회원가입
 						</SignUpButton>
 					</div>
