@@ -13,6 +13,7 @@ import NanumDetail from './pages/NanumDetail';
 import MyCommentList from './pages/MyCommentList';
 import CreateComment from './pages/CreateComment';
 import NotFound from './pages/NotFound';
+import MyInfo from './pages/MyInfo';
 
 const App = () => {
 	return (
@@ -33,7 +34,7 @@ const App = () => {
 				<Route path="nanum/:postId" element={<CreateComment />} />
 				<Route path="my-page/:userId">
 					<Route element={<SideBar />}>
-						<Route path="edit" element={<NoData />} />
+						<Route path="edit" element={<MyInfo />} />
 						<Route path="post-list" element={<MyPostList />} />
 						<Route path="comment-list" element={<MyCommentList />} />
 					</Route>

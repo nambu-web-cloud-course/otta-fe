@@ -16,18 +16,12 @@ const PostCode = props => {
 			}
 			fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
 		}
-		console.log(data);
-		console.log(fullAddress);
-		console.log(data.zonecode);
 
-		props.setAddress({
-			...props.address,
-			address: fullAddress,
-		});
+		props.setAddress(fullAddress);
 	};
 
 	return (
-		<div className='box'>
+		<div className="box">
 			<DaumPostcode className="postmodal" autoClose onComplete={complete} />
 		</div>
 	);
