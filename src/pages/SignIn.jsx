@@ -52,7 +52,7 @@ export default function SignIn() {
 				localStorage.setItem('token', response.data.token);
 				alert(`${response.data.nick_name}님 로그인 되었습니다`);
 			} else {
-				alert('로그인 실패');
+				alert(response.data.message);
 			}
 		} catch (error) {
 			alert('로그인 중 Error:', error);
