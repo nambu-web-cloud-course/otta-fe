@@ -22,17 +22,17 @@ export default function SignUp() {
 	const [name, setName] = useState('');
 	const [nick_name, setNickname] = useState('');
 	const [phone, setPhone] = useState('');
-	const [addr, setAddr] = useState({
-		address: '',
-	});
+	const [addr, setAddr] = useState('');
 	const [addr_detail, setAddrdetail] = useState('');
 	const [error, setError] = useState(false);
 	const [err_msg, setErrMsg] = useState('');
 	const emailRegEx =
 		/^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
+	const phoneRegEx = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
 	const [pw_error, setPwError] = useState(false);
 	const [pw_err_msg, setPwErrMsg] = useState('');
-
+	const [phone_error, setPhoneError] = useState(false);
+	const [phone_err_msg, setPhoneErrMsg] = useState('');
 	const [popup, setPopup] = useState(false);
 
 	const emailCheck = e => {
@@ -43,17 +43,7 @@ export default function SignUp() {
 			setError(false);
 			setErrMsg('');
 		}
-	};
-
-	const handleEmail = e => {
-		setEmail(e.currentTarget.value);
-	};
-	const handlePassword = e => {
-		setPassword(e.currentTarget.value);
-	};
-
-	const handleCheckPassword = e => {
-		setCheckPassword(e.currentTarget.value);
+		setEmail(e.target.value);
 	};
 
 	const handleMatching = () => {
@@ -66,26 +56,15 @@ export default function SignUp() {
 		}
 	};
 
-	const handleName = e => {
-		setName(e.currentTarget.value);
-	};
-
-	const handleNickname = e => {
-		setNickname(e.currentTarget.value);
-	};
-
 	const handlePhone = e => {
+		if (!phoneRegEx.test(e.currentTarget.value)) {
+			setPhoneError(true);
+			setPhoneErrMsg('핸드폰번호 형식에 맞지 않습니다');
+		} else {
+			setPhoneError(false);
+			setPhoneErrMsg('');
+		}
 		setPhone(e.currentTarget.value);
-	};
-
-	const handleAddr = e => {
-		setAddr({
-			...addr,
-			address: e.target.value,
-		});
-	};
-	const handleAddrDetail = e => {
-		setAddrdetail(e.target.value);
 	};
 
 	const handleComplete = () => {
@@ -94,7 +73,7 @@ export default function SignUp() {
 
 	const handleSubmit = async e => {
 		e.preventDefault();
-		if (!email || !password || !name || !nick_name || !addr.address || !addr_detail || !phone) {
+		if (!email || !password || !name || !nick_name || !addr || !addr_detail || !phone) {
 			alert('비어 있는 항목을 모두 채워주세요');
 			return;
 		}
@@ -110,9 +89,9 @@ export default function SignUp() {
 					password,
 					name,
 					nick_name,
-					addr: addr.address,
-					addr_detail: addr_detail,
-					phone: phone,
+					addr,
+					addr_detail,
+					phone,
 				},
 				{
 					headers: { 'Content-Type': 'application/json' },
@@ -148,25 +127,22 @@ export default function SignUp() {
 
 					<SignUpTextField
 						margin="normal"
-						name="email"
 						error={error}
 						required
 						fullWidth
 						label="이메일 주소"
 						type="text"
-						onChange={handleEmail}
-						onBlur={emailCheck}
+						onChange={emailCheck}
 						autoComplete="email"
 						helperText={err_msg}
 					/>
 					<SignUpTextField
 						margin="normal"
-						name="password"
 						required
 						fullWidth
 						label="비밀번호"
 						type="password"
-						onChange={handlePassword}
+						onChange={e => setPassword(e.target.value)}
 					/>
 					<SignUpTextField
 						margin="normal"
@@ -174,65 +150,62 @@ export default function SignUp() {
 						fullWidth
 						label="비밀번호 확인"
 						type="password"
-						onChange={handleCheckPassword}
+						onChange={e => setCheckPassword(e.target.value)}
 						onBlur={handleMatching}
 						error={pw_error}
 						helperText={pw_err_msg}
 					/>
 					<SignUpTextField
 						margin="normal"
-						name="name"
 						required
 						fullWidth
 						label="이름"
 						type="text"
-						onChange={handleName}
+						onChange={e => setName(e.target.value)}
 					/>
 					<SignUpTextField
 						margin="normal"
-						name="nickname"
 						required
 						fullWidth
 						label="별명을 정해 주세요"
 						type="text"
-						onChange={handleNickname}
+						onChange={e => setNickname(e.target.value)}
 					/>
 					<SignUpTextField
 						margin="normal"
-						name="phone"
 						required
 						fullWidth
 						label="핸드폰번호"
 						type="text"
 						onChange={handlePhone}
+						error={phone_error}
+						helperText={phone_err_msg}
 					/>
 					<SignUpTextField
 						margin="normal"
-						name="addr_road"
 						required
 						fullWidth
 						disabled
 						label="도로명 주소"
 						type="text"
-						onChange={handleAddr}
-						value={addr.address}
+						onChange={e => setAddr(e.target.value)}
+						value={addr}
 					/>
 					<Grid container>
 						<Grid item xs>
 							<SignUpTextField
 								margin="normal"
-								name="addr_detail"
 								required
 								fullWidth
 								label="상세주소"
 								type="text"
-								onChange={handleAddrDetail}
+								onChange={e => setAddrdetail(e.target.value)}
 								value={addr_detail}
 							/>
 						</Grid>
 						<Grid item>
 							<SignUpButton
-								type="submit"
+								type="button"
 								onClick={handleComplete}
 								variant="contained"
 								sx={{ mt: 5, marginLeft: 1 }}

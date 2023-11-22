@@ -71,7 +71,6 @@ export default function MyInfo() {
 			setPwErrMsg('');
 		} else {
 			setPwError(true);
-			console.log(`password: ${password} passwordcheck: ${check_password}`);
 			setPwErrMsg('비밀번호가 일치하지 않습니다.');
 		}
 	};
@@ -105,27 +104,23 @@ export default function MyInfo() {
 			const response = await client.put(
 				'/my-page/edit/user-info',
 				{
-					password,
-					nick_name,
-					phone,
-					addr,
-					addr_detail,
+					password: password,
+					nick_name: nick_name,
+					phone: phone,
+					addr: addr,
+					addr_detail: addr_detail,
 				},
 				{
 					headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
 				},
 			);
-			console.log('response', response);
 			if (response.data.success) {
 				alert('회원정보 수정이 완료되었습니다.');
-				// goTo(`/my-page/${response.id}/post-list`);
 			} else {
-				if (response.data.message) {
-					alert(response.data.message);
-				}
+				alert('회원정보 수정 중 에러 발생');
 			}
 		} catch (error) {
-			alert('회원 등록 중 에러 발생');
+			alert('회원 정보 수정 중 에러 발생');
 		}
 	};
 
@@ -160,7 +155,7 @@ export default function MyInfo() {
 							margin="normal"
 							required
 							fullWidth
-							// type="password"
+							type="password"
 							onChange={e => setPassword(e.target.value)}
 							variant="standard"
 						/>
@@ -168,7 +163,7 @@ export default function MyInfo() {
 							margin="normal"
 							required
 							fullWidth
-							// type="password"
+							type="password"
 							onChange={e => setCheckPassword(e.target.value)}
 							onBlur={handleCheckPassword}
 							error={pw_error}
