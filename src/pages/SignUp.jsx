@@ -117,7 +117,7 @@ export default function SignUp() {
 			);
 			if (response.data.success) {
 				alert('회원가입이 완료되었습니다.');
-				goTo('/sign-in');
+				goTo(`/my-page/${response.id}/comment-list`);
 			} else {
 				if (response.data.message) {
 					alert(response.data.message);

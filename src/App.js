@@ -28,8 +28,9 @@ const App = () => {
 					<Route path="list" element={<NanumList />} />
 					<Route path="detail" element={<NanumDetail />} />
 					<Route path="create-post" element={<CreatePost />} />
-					<Route path="list/comment" element={<CreateComment />} />
+					<Route path=":postId/comment" element={<CreateComment />} />
 				</Route>
+				<Route path="nanum/:postId" element={<CreateComment />} />
 				<Route path="my-page/:userId">
 					<Route element={<SideBar />}>
 						<Route path="edit" element={<NoData />} />

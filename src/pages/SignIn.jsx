@@ -9,8 +9,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import axios from 'axios';
+import { useNavigateTo } from '../routes/navigate';
 
 export default function SignIn() {
+	const goTo = useNavigateTo();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState(false);
@@ -51,6 +53,7 @@ export default function SignIn() {
 			if (response.data.success) {
 				localStorage.setItem('token', response.data.token);
 				alert(`${response.data.nick_name}님 로그인 되었습니다`);
+				goTo(`/my-page/${response.id}/comment-list`);
 			} else {
 				alert(response.data.message);
 			}

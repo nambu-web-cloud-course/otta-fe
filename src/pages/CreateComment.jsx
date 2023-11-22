@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import CustomButton from '../components/common/CustomButton';
@@ -6,8 +6,12 @@ import Grid from '@mui/material/Grid';
 import PostCode from '../components/sign/PostCode.jsx';
 import { styled } from '@mui/material';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { useApi } from '../hooks/api/useApi';
+import { useNavigateTo } from '../routes/navigate';
 
 export default function CreateComment() {
+	const goTo = useNavigateTo();
 	const [title, setTitle] = useState('');
 	const [addr, setAddr] = useState({
 		address: '',
@@ -15,8 +19,27 @@ export default function CreateComment() {
 	const [addr_detail, setAddrDetail] = useState();
 	const [phone, setPhone] = useState();
 	const [content, setContent] = useState('');
-
+	const [post_title, setPostTitle] = useState('');
 	const [popup, setPopup] = useState(false);
+	const [userId, setUserId] = useState('');
+	const { postId } = useParams();
+	const { data, error, triggerFetch } = useApi(`/nanum-post/detail?post_id=${postId}`, 'GET');
+
+	useEffect(() => {
+		if (data) {
+			setPostTitle(data.title);
+		}
+		if (error) {
+			alert('문제가 발생했어요 잠시 뒤에 다시 시도해주세요');
+		}
+	}, [data, error]);
+
+	useEffect(() => {
+		triggerFetch();
+		const token = localStorage.getItem('token');
+		const decodedToken = JSON.parse(atob(token.split('.')[1]));
+		setUserId(decodedToken.user_id);
+	}, []);
 
 	const handleTitleChange = e => {
 		setTitle(e.target.value);
@@ -45,12 +68,12 @@ export default function CreateComment() {
 		setPopup(!popup);
 	};
 
-	const handleSubmit = async () => {
-		console.log('title', title);
-		console.log('content', content);
-		console.log('phone', phone);
-		console.log('addr', addr.address);
-		console.log('addr_detail', addr_detail);
+	const handleSubmit = async e => {
+		e.preventDefault();
+		if (!title || !content || !phone || !addr || !addr_detail) {
+			alert('빠진 항목이 없도록 작성해 주세요');
+			return;
+		}
 
 		try {
 			const response = await axios.post(
@@ -61,6 +84,8 @@ export default function CreateComment() {
 					phone: phone,
 					addr: addr.address,
 					addr_detail: addr_detail,
+					post_id: postId,
+					user_id: userId,
 				},
 				{
 					headers: { 'Content-Type': 'application/json' },
@@ -69,6 +94,8 @@ export default function CreateComment() {
 
 			if (response.data.success) {
 				alert('나눔 요청이 등록되었습니다.');
+				goTo(`/my-page/${userId}/comment-list`);
+				return;
 			} else {
 				console.error('응답글 작성 실패');
 			}
@@ -91,7 +118,7 @@ export default function CreateComment() {
 			<h1>새 주인이 되어보세요</h1>
 			<Grid container>
 				<Grid item xs>
-					<input label="나눔글제목" type="text" />
+					<input value={post_title} type="text" />
 				</Grid>
 				<Grid item>
 					<CustomButton
@@ -101,6 +128,7 @@ export default function CreateComment() {
 						color={'WHITE'}
 						textColor={'NAVY'}
 						text={'나눔 글 보기'}
+						onClick={() => goTo(`/nanum/detail?postId=${postId}`)}
 					/>
 				</Grid>
 			</Grid>
@@ -188,6 +216,7 @@ export default function CreateComment() {
 					onChange={handleContentChange}
 				/>
 				<CustomButton
+					id="test"
 					width={200}
 					height={60}
 					fontSize={'xs'}
