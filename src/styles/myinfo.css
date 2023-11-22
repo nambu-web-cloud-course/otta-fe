@@ -1,0 +1,37 @@
+.container {
+	display: flex;
+	width: 100%;
+}
+.titles {
+	width: 22%;
+	line-height: 40px;
+	font-size: small;
+	margin-right: 20px;
+}
+.inputs {
+	width: 80%;
+}
+.infobutton {
+	background-color: #fac24d;
+	width: 100px;
+	box-shadow: 6px 6px 7px -15px rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
+	font-weight: bold;
+	color: white;
+	width: 150px;
+	height: 40px;
+	font-size: small;
+	text-align: center;
+}
+.infobutton:hover {
+	background-color: rgba(250, 194, 77, 0.7);
+}
+h1 {
+	text-align: center;
+}
+p.info {
+	font-size: small;
+}
+.long {
+	width: 100%;
+}
