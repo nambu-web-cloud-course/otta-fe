@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useOutletContext } from 'react-router-dom';
 import { Button, lighten, styled } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -20,6 +20,7 @@ export default function SignIn() {
 	const emailRegEx =
 		/^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 
+	const [userId, setToken] = useOutletContext();
 	const handleEmail = e => {
 		setEmail(e.target.value);
 	};
@@ -52,8 +53,9 @@ export default function SignIn() {
 			);
 			if (response.data.success) {
 				localStorage.setItem('token', response.data.token);
+				setToken(response.data.token);
 				alert(`${response.data.nick_name}님 로그인 되었습니다`);
-				goTo(`/my-page/${response.id}/post-list`);
+				goTo(`/my-page/${response.id}/post-list`, { replace: true });
 			} else {
 				alert(response.data.message);
 			}
@@ -61,6 +63,12 @@ export default function SignIn() {
 			alert('로그인 중 Error:', error);
 		}
 	};
+
+	useEffect(() => {
+		if (localStorage.getItem('token')) {
+			goTo(`/my-page/${userId}/post-list`);
+		}
+	}, []);
 
 	return (
 		<>

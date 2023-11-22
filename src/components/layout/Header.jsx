@@ -19,13 +19,12 @@ const Header = () => {
 	useEffect(() => {
 		if (token) {
 			client.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-			localStorage.setItem('token', token);
 		} else {
 			delete client.defaults.headers.common['Authorization'];
 			localStorage.removeItem('token');
 		}
 		triggerFetch();
-	}, [token]);
+	}, [setToken]);
 
 	useEffect(() => {
 		if (data) {
