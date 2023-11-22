@@ -98,6 +98,6 @@ const ContentInner = styled('div')`
 const BackgroundWrapper = styled('div')`
 	position: absolute;
 	z-index: -1;
-	right: -20px;
-	bottom: -200px;
+	right: -250px;
+	bottom: -20px;
 `;

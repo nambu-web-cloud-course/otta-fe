@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import {
 	Box,
@@ -38,9 +37,9 @@ const Dropdown = ({ type, option_data, setValue }) => {
 	};
 
 	return (
-		<Box sx={{ display: 'flex' }}>
-			<ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-				<Button>
+		<Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+			<ButtonGroup size="large" variant="outlined" ref={anchorRef} aria-label="split button">
+				<Button onClick={handleToggle}>
 					{isSelected
 						? option_data[selectedIndex]
 						: `${type === 'DISTRICT' ? '구를' : '동을'} 선택해주세요.`}

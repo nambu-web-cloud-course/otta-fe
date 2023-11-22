@@ -1,13 +1,40 @@
-import { styled } from '@mui/material';
-import React from 'react';
+import { Avatar, styled } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import Icon from '../common/Icon';
 import CustomButton from '../common/CustomButton';
 import { useNavigateTo } from '../../routes/navigate';
+import { emoji_mapping_data } from '../../data/emojiData';
+import { useApi } from '../../hooks/api/useApi';
+import client from '../../hooks/api/client';
 
 const Header = () => {
 	const goTo = useNavigateTo();
+	const [token, setToken] = useState(localStorage.getItem('token'));
+	const [userInfo, setUserInfo] = useState({});
+
+	const { data, triggerFetch } = useApi('/my-page/edit/user-info', 'GET');
+
+	useEffect(() => {
+		if (token) {
+			client.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+			localStorage.setItem('token', token);
+		} else {
+			delete client.defaults.headers.common['Authorization'];
+			localStorage.removeItem('token');
+		}
+		triggerFetch();
+	}, [token]);
+
+	useEffect(() => {
+		if (data) {
+			setUserInfo(data);
+		} else {
+			setUserInfo({});
+		}
+	}, [data]);
+
 	return (
 		<>
 			<StyledHeader>
@@ -21,28 +48,47 @@ const Header = () => {
 					<NavButton onClick={() => goTo('/nanum/list')}>헌옷 나눠요</NavButton>
 				</NavWrapper>
 				<AuthButtonWrapper>
-					<CustomButton
-						width={80}
-						height={44}
-						fontSize={'xs'}
-						color={'WHITE'}
-						textColor={'NAVY'}
-						text={'로그인'}
-						onClick={() => goTo('/sign-in')}
-					/>
-					<CustomButton
-						width={100}
-						height={44}
-						fontSize={'xs'}
-						color={'NAVY'}
-						textColor={'WHITE'}
-						text={'회원가입'}
-						onClick={() => goTo('/sign-up')}
-					/>
+					{token && (
+						<>
+							<GreetingText>{userInfo['nick_name']}님 안녕하세요 🤚</GreetingText>
+							<Avatar>{emoji_mapping_data[userInfo['emoji']]}</Avatar>
+							<CustomButton
+								width={100}
+								height={44}
+								fontSize={'xs'}
+								color={'WHITE'}
+								textColor={'NAVY'}
+								text={'마이페이지'}
+								onClick={() => goTo(`/my-page/${userInfo['id']}/edit`)}
+							/>
+						</>
+					)}
+					{!token && (
+						<>
+							<CustomButton
+								width={80}
+								height={44}
+								fontSize={'xs'}
+								color={'WHITE'}
+								textColor={'NAVY'}
+								text={'로그인'}
+								onClick={() => goTo('/sign-in')}
+							/>
+							<CustomButton
+								width={100}
+								height={44}
+								fontSize={'xs'}
+								color={'NAVY'}
+								textColor={'WHITE'}
+								text={'회원가입'}
+								onClick={() => goTo('/sign-up')}
+							/>
+						</>
+					)}
 				</AuthButtonWrapper>
 			</StyledHeader>
 			<Spacing />
-			<Outlet />
+			<Outlet context={[userInfo['id'], setToken]} />
 		</>
 	);
 };
@@ -96,6 +142,8 @@ const NavWrapper = styled('div')`
 
 const AuthButtonWrapper = styled('div')`
 	display: flex;
+	align-items: center;
+	gap: 12px;
 `;
 
 const LogoWrapper = styled('button')`
@@ -103,3 +151,10 @@ const LogoWrapper = styled('button')`
 	align-items: center;
 	gap: 20px;
 `;
+
+const GreetingText = styled('span')(({ theme }) => {
+	return {
+		color: theme.colors.BLACK,
+		fontSize: theme.font_sizes.xs,
+	};
+});

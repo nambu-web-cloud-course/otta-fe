@@ -11,5 +11,6 @@ const Span = styled('span')(({ theme }) => {
 	return {
 		fontSize: theme.font_sizes.sm,
 		textAlign: 'center',
+		whiteSpace: 'pre-wrap',
 	};
 });

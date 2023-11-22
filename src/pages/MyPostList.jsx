@@ -178,10 +178,11 @@ const MyPostList = () => {
 	const [commentList, setCommentList] = useState([]);
 	const [clickedPostId, setClickedPostId] = useState(null);
 
-	const { data: postListData, triggerFetch: triggerFetchPostListData } = useApi(
-		'/my-page/post-list',
-		'GET',
-	);
+	const {
+		data: postListData,
+		error: postListDataError,
+		triggerFetch: triggerFetchPostListData,
+	} = useApi('/my-page/post-list', 'GET');
 
 	const {
 		data: commentListData,
@@ -260,6 +261,7 @@ const MyPostList = () => {
 	return (
 		<div>
 			<Title text={'작성한 나눔글'} />
+			{postListDataError && postList.length == 0 && <div>아직 작성한 나눔글이 없습니다.</div>}
 			<Box component={'section'} sx={{ display: 'flex' }}>
 				<FixedSizeList
 					height={600}

@@ -8,7 +8,7 @@ import {
 	styled,
 } from '@mui/material';
 import CheckroomIcon from '@mui/icons-material/Checkroom';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useOutletContext, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { useNavigateTo } from '../../routes/navigate';
 
@@ -33,6 +33,13 @@ const SideBar = () => {
 		[userId],
 	);
 
+	const [, setToken] = useOutletContext();
+
+	const onClickSignOut = () => {
+		setToken();
+		goTo('/');
+	};
+
 	return (
 		<Wrapper>
 			<SideBarWrapper>
@@ -51,8 +58,7 @@ const SideBar = () => {
 				</List>
 				<Divider />
 				<List>
-					{/* TODO: 로그아웃 함수 연결 */}
-					<ListItem disablePadding onClick={() => console.log('로그아웃')}>
+					<ListItem disablePadding onClick={onClickSignOut}>
 						<ListItemButton>
 							<ListItemIcon>
 								<CheckroomIcon />

@@ -1,22 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Title } from '../components/common/Title';
-import {
-	TextField,
-	Button,
-	lighten,
-	styled,
-	ImageList,
-	ImageListItem,
-	Box,
-	Paper,
-} from '@mui/material';
+import { TextField, Button, lighten, styled, Box, Paper } from '@mui/material';
 import DragAndDropZone from '../components/createPost/DragAndDropZone';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CustomButton from '../components/common/CustomButton';
 import { useNavigateTo } from '../routes/navigate';
 import theme from '../styles/theme';
 import client from '../hooks/api/client';
 import CircularProgress from '@mui/material/CircularProgress';
+import ImageList from '../components/createPost/ImageList';
 
 export default function CreatePost() {
 	const goTo = useNavigateTo();
@@ -61,32 +51,41 @@ export default function CreatePost() {
 		}
 
 		setIsLoading(true);
-		try {
-			const { data } = await client.post('/nanum-create-post', post);
-			const { post_id } = data.data;
 
-			const formData = new FormData();
-			imageInfo.forEach(image => {
-				formData.append('files', image.file, image.file.name);
+		let post_id = null;
+
+		client
+			.post('/nanum-create-post', post)
+			.then(result => {
+				post_id = result.data.data.post_id;
+				const formData = new FormData();
+				imageInfo.forEach(image => {
+					formData.append('files', image.file, image.file.name);
+				});
+				return client.post('/upload/images', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+				});
+			})
+			.then(upload_result => {
+				const { data: storage_url_list } = upload_result;
+				console.log('storage_url_list: ', storage_url_list);
+				return client.post('/nanum-create-post/image', {
+					post_id: post_id,
+					image_url_list: storage_url_list.data,
+				});
+			})
+			.then(() => {
+				setIsLoading(false);
+				goTo(`/nanum/detail?postId=${post_id}`);
+			})
+			.catch(error => {
+				console.log(error);
+				alert('나눔글 작성에 실패했어요, 잠시 뒤에 다시 실행해주세요.');
+				setIsLoading(false);
+				goTo('/nanum/list');
 			});
-
-			const { data: storage_url_list } = await client.post('/upload/images', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data;',
-				},
-				timeout: 30000,
-			});
-
-			await client.post('/nanum-create-post/image', {
-				post_id: post_id,
-				image_url_list: storage_url_list.data,
-			});
-
-			setIsLoading(false);
-			goTo(`/nanum/detail?postId=${post_id}`);
-		} catch (error) {
-			console.log(error);
-		}
 	};
 
 	const handleCancel = () => {
@@ -118,9 +117,9 @@ export default function CreatePost() {
 					display: 'flex',
 					flexDirection: 'column',
 					justifyContent: 'center',
-					marginLeft: 20,
-					marginRight: 20,
-					marginBottom: 20,
+					marginLeft: '120px',
+					marginRight: '120px',
+					marginBottom: '20px',
 				}}
 			>
 				<Title text={'나눔 게시글 작성'} />
@@ -143,14 +142,14 @@ export default function CreatePost() {
 						justifyContent: 'center',
 						gap: '60px',
 						minWidth: 1000,
-						minHeight: '530px',
+						minHeight: '590px',
 					}}
 				>
 					<Box
 						sx={{
 							display: 'flex',
 							flexDirection: 'column',
-							width: '50%',
+							width: '570px',
 							textAlign: 'left',
 						}}
 					>
@@ -173,40 +172,14 @@ export default function CreatePost() {
 						sx={{
 							display: 'flex',
 							flexDirection: 'column',
-							width: '50%',
 							textAlign: 'left',
 							justifyContent: 'space-between',
 						}}
 					>
-						<Box>
+						<Box sx={{ width: '100%' }}>
 							<SubTitle>첨부 이미지</SubTitle>
 							<DragAndDropZone onFileUpload={onUploadImage} />
-							<ImageList cols={5} gap={8} rowHeight={90}>
-								{imageInfo.map((image, idx) => (
-									<Box
-										sx={{
-											display: 'flex',
-											flexDirection: 'column',
-											alignItems: 'center',
-											gap: '10px',
-										}}
-										key={`${image.file.name}-${image.url}`}
-									>
-										<ImageListItem>
-											<img src={image.url} loading="lazy" />
-										</ImageListItem>
-										<CustomButton
-											width={36}
-											height={28}
-											fontSize={'xs'}
-											color={'DARK_ORANGE'}
-											textColor={'WHITE'}
-											text={<DeleteIcon />}
-											onClick={() => onDeleteImage(idx)}
-										/>
-									</Box>
-								))}
-							</ImageList>
+							<ImageList imageInfo={imageInfo} onDeleteImage={onDeleteImage} />
 						</Box>
 						<Box>
 							<SubmitButton sx={{ mt: 5 }} onClick={handleSubmit}>
