@@ -53,7 +53,7 @@ export default function SignIn() {
 			if (response.data.success) {
 				localStorage.setItem('token', response.data.token);
 				alert(`${response.data.nick_name}님 로그인 되었습니다`);
-				goTo(`/my-page/${response.id}/comment-list`);
+				goTo(`/my-page/${response.id}/post-list`);
 			} else {
 				alert(response.data.message);
 			}
