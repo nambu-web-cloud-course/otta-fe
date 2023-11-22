@@ -7,6 +7,7 @@ import { Title } from '../components/common/Title';
 import CustomButton from '../components/common/CustomButton';
 import { useNavigateTo } from '../routes/navigate';
 import { useApi } from '../hooks/api/useApi';
+import { convertToDate } from '../utils/convertDateFormat';
 
 const NanumDetail = () => {
 	const goTo = useNavigateTo();
@@ -57,7 +58,7 @@ const NanumDetail = () => {
 				{detail && (
 					<>
 						<StyledSubTitleWrapper>
-							<StyledSubTitle>{detail.createdAt}</StyledSubTitle>
+							<StyledSubTitle>{convertToDate(detail.createdAt)}</StyledSubTitle>
 							<StyledSubTitle>{detail.nick_name}</StyledSubTitle>
 						</StyledSubTitleWrapper>
 						<Title text={detail.title}></Title>
@@ -75,7 +76,7 @@ const NanumDetail = () => {
 					</>
 				)}
 			</Box>
-			{detail && !detail.is_my_post && (
+			{detail && !detail.is_my_post && detail.status !== 3 && (
 				<Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
 					<CustomButton
 						width={370}

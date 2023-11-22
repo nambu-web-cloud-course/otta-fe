@@ -20,6 +20,9 @@ import theme from '../styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/api/useApi';
 import client from '../hooks/api/client';
+import { convertToDate } from '../utils/convertDateFormat';
+import CustomButton from '../components/common/CustomButton';
+import { useNavigateTo } from '../routes/navigate';
 
 const GAP_SIZE = 10;
 const PARCEL_CJ_URL = 'https://www.cjlogistics.com/ko/tool/parcel/reservation-general';
@@ -126,7 +129,7 @@ const CommentRow = memo(({ data, index, style }) => {
 						primary={`${title}`}
 						secondary={!is_clicked ? '응답 상세보기' : ' '}
 					/>
-					<ListItemText sx={{ textAlign: 'right' }}>{created_at}</ListItemText>
+					<ListItemText sx={{ textAlign: 'right' }}>{convertToDate(created_at)}</ListItemText>
 				</Box>
 
 				{is_clicked && (
@@ -177,6 +180,8 @@ const MyPostList = () => {
 	const [postList, setPostList] = useState([]);
 	const [commentList, setCommentList] = useState([]);
 	const [clickedPostId, setClickedPostId] = useState(null);
+
+	const goTo = useNavigateTo();
 
 	const {
 		data: postListData,
@@ -261,7 +266,20 @@ const MyPostList = () => {
 	return (
 		<div>
 			<Title text={'작성한 나눔글'} />
-			{postListDataError && postList.length == 0 && <div>아직 작성한 나눔글이 없습니다.</div>}
+			{postListDataError && postList.length == 0 && (
+				<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+					아직 작성한 나눔글이 없습니다.
+					<CustomButton
+						width={200}
+						height={44}
+						fontSize={'xs'}
+						color={'DARK_YELLOW'}
+						textColor={'WHITE'}
+						text={'나눔글 작성하러 가기'}
+						onClick={() => goTo('/nanum/create-post')}
+					/>
+				</Box>
+			)}
 			<Box component={'section'} sx={{ display: 'flex' }}>
 				<FixedSizeList
 					height={600}
