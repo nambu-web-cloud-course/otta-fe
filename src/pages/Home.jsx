@@ -3,9 +3,9 @@ import React from 'react';
 import Icon from '../components/common/Icon';
 
 const HOME_IMAGE_URL = [
-	'https://stotta001.blob.core.windows.net/assets/First-Right-Asset.png',
-	'https://stotta001.blob.core.windows.net/assets/Second-Left-Asset.png',
-	'https://stotta001.blob.core.windows.net/assets/Third-Right-Asset.png',
+	'https://stotta1128.blob.core.windows.net/assets/First-Right-Asset.png',
+	'https://stotta1128.blob.core.windows.net/assets/Second-Left-Asset.png',
+	'https://stotta1128.blob.core.windows.net/assets/Third-Right-Asset.png',
 ];
 
 const Home = () => {
