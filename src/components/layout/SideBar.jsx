@@ -37,6 +37,7 @@ const SideBar = () => {
 
 	const onClickSignOut = () => {
 		setToken();
+		alert('로그아웃되었어요.');
 		goTo('/');
 	};
 

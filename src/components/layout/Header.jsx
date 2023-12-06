@@ -24,7 +24,7 @@ const Header = () => {
 			localStorage.removeItem('token');
 		}
 		triggerFetch();
-	}, [setToken]);
+	}, [setToken, token]);
 
 	useEffect(() => {
 		if (data) {
