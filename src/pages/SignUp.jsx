@@ -98,8 +98,8 @@ export default function SignUp() {
 				},
 			);
 			if (response.data.success) {
-				alert('회원가입이 완료되었습니다.');
-				goTo(`/my-page/${response.id}/post-list`);
+				alert('회원가입이 완료되었습니다.\n가입한 정보로 로그인해주세요.');
+				goTo('/sign-in');
 			} else {
 				if (response.data.message) {
 					alert(response.data.message);

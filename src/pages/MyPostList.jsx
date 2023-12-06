@@ -294,7 +294,7 @@ const MyPostList = () => {
 				</FixedSizeList>
 				<Box sx={{ width: '500px' }}>
 					{commentListDataError && commentList.length == 0 && (
-						<div>나눔글에 대한 응답글이 없습니다</div>
+						<NoCommentText>나눔글에 대한 응답글이 없습니다</NoCommentText>
 					)}
 					<VariableSizeList
 						ref={commentRef}
@@ -339,4 +339,16 @@ const CommentUserId = styled('span')(({ theme }) => ({
 	width: '100%',
 	display: 'flex',
 	justifyContent: 'end',
+}));
+
+const NoCommentText = styled('span')(({ theme }) => ({
+	fontSize: theme.font_sizes.sm,
+	fontWeight: 'bold',
+	color: theme.colors.NAVY,
+	marginLeft: '20px',
+	marginTop: '20px',
+
+	width: '100%',
+	display: 'flex',
+	justifyContent: 'center',
 }));

@@ -4,7 +4,6 @@ import SignUp from './pages/SignUp';
 import Header from './components/layout/Header';
 import Home from './pages/Home';
 import FindClothingBox from './pages/FindClothingBox';
-import NoData from './components/findClothingBox/NoData';
 import CreatePost from './pages/CreatePost';
 import MyPostList from './pages/MyPostList';
 import SideBar from './components/layout/SideBar';
@@ -14,6 +13,7 @@ import MyCommentList from './pages/MyCommentList';
 import CreateComment from './pages/CreateComment';
 import NotFound from './pages/NotFound';
 import MyInfo from './pages/MyInfo';
+import TipForClothes from './pages/TipForClothes';
 
 const App = () => {
 	return (
@@ -23,7 +23,7 @@ const App = () => {
 				<Route path="sign-in" element={<SignIn />} />
 				<Route path="sign-up" element={<SignUp />} />
 
-				<Route path="tip-clothing-recycle" element={<NoData />} />
+				<Route path="tip-clothing-recycle" element={<TipForClothes />} />
 				<Route path="find-clothing-box" element={<FindClothingBox />} />
 				<Route path="nanum">
 					<Route path="list" element={<NanumList />} />

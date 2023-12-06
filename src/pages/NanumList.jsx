@@ -139,5 +139,11 @@ const StyledContent = styled('p')(({ theme }) => {
 	return {
 		fontSize: theme.font_sizes.xs,
 		color: theme.colors.DARK_GRAY,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		display: '-webkit-box',
+		lineClamp: 3,
+		WebkitLineClamp: 3,
+		WebkitBoxOrient: 'vertical',
 	};
 });
