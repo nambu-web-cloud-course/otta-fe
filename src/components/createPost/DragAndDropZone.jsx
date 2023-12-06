@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const DragAndDropZone = ({ onFileUpload }) => {

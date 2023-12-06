@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Title } from '../components/common/Title';
 import { Box, Card, CardActions, CardContent, CardMedia, styled } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2

@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-import React from 'react';
 
 export const Title = ({ text }) => {
 	return <H1>{text}</H1>;

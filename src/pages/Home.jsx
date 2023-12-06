@@ -1,11 +1,10 @@
 import { styled } from '@mui/material';
-import React from 'react';
 import Icon from '../components/common/Icon';
 
 const HOME_IMAGE_URL = [
-	'https://stotta1128.blob.core.windows.net/assets/First-Right-Asset.png',
-	'https://stotta1128.blob.core.windows.net/assets/Second-Left-Asset.png',
-	'https://stotta1128.blob.core.windows.net/assets/Third-Right-Asset.png',
+	`${process.env.REACT_APP_BLOB_IMAGE}/First-Right-Asset.png`,
+	`${process.env.REACT_APP_BLOB_IMAGE}/Second-Left-Asset.png`,
+	`${process.env.REACT_APP_BLOB_IMAGE}/Third-Right-Asset.png`,
 ];
 
 const Home = () => {

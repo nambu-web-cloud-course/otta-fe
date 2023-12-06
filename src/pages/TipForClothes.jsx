@@ -1,5 +1,4 @@
 import { styled } from '@mui/material';
-import React from 'react';
 
 const HOME_IMAGE_URL = [
 	`${process.env.REACT_APP_BLOB_IMAGE}/Tip-01.png`,

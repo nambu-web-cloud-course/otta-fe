@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, lighten, styled } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -10,7 +9,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PostCode from '../components/sign/PostCode.jsx';
-import axios from 'axios';
 import { useNavigateTo } from '../routes/navigate';
 import client from '../hooks/api/client.js';
 

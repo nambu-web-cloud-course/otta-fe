@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Box, styled } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import theme from '../styles/theme';
 import { Title } from '../components/common/Title';
