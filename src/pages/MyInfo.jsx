@@ -1,19 +1,14 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Button, lighten, styled } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PostCode from '../components/sign/PostCode.jsx';
-import axios from 'axios';
-import { useNavigateTo } from '../routes/navigate';
 import client from '../hooks/api/client.js';
 import '../styles/myinfo.css';
+import { useApi } from '../hooks/api/useApi.js';
 
 export default function MyInfo() {
-	const goTo = useNavigateTo();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [check_password, setCheckPassword] = useState('');
@@ -32,27 +27,21 @@ export default function MyInfo() {
 	const [phone_err_msg, setPhoneErrMsg] = useState('');
 	const [popup, setPopup] = useState(false);
 
+	const { data, triggerFetch } = useApi('/my-page/edit/user-info', 'GET');
+
 	useEffect(() => {
-		const response = axios.get(
-			process.env.REACT_APP_SERVER + '/my-page/edit/user-info',
-			{},
-			{
-				headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
-			},
-		);
-		if (response) {
-			response
-				.then(data => data.data)
-				.then(data => data.data)
-				.then(data => {
-					setEmail(data.email);
-					setNickname(data.nick_name);
-					setAddr(data.addr);
-					setAddrdetail(data.addr_detail);
-					setPhone(data.phone);
-				});
-		}
+		triggerFetch();
 	}, []);
+
+	useEffect(() => {
+		if (data) {
+			setEmail(data.email);
+			setNickname(data.nick_name);
+			setAddr(data.addr);
+			setAddrdetail(data.addr_detail);
+			setPhone(data.phone);
+		}
+	}, [data]);
 
 	const handleEmail = e => {
 		if (!emailRegEx.test(e.currentTarget.value)) {
@@ -65,7 +54,7 @@ export default function MyInfo() {
 		setEmail(e.currentTarget.value);
 	};
 
-	const handleCheckPassword = e => {
+	const handleCheckPassword = () => {
 		if (password === check_password) {
 			setPwError(false);
 			setPwErrMsg('');
@@ -195,6 +184,7 @@ export default function MyInfo() {
 							value={addr}
 							required
 							fullWidth
+							disabled
 							type="text"
 							onChange={e => setAddr(e.target.value)}
 							variant="standard"
