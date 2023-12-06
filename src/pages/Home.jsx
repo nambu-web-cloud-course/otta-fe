@@ -20,12 +20,12 @@ const Home = () => {
 					</ContentLeftText>
 				</ContentInner>
 				<ContentInner>
-					<img src={HOME_IMAGE_URL[0]} alt="메인 첫 이미지" width={700} height={'auto'} />
+					<Image src={HOME_IMAGE_URL[0]} alt="메인 첫 이미지" />
 				</ContentInner>
 			</ContentWrapper>
 			<ContentWrapper>
 				<ContentInner>
-					<img src={HOME_IMAGE_URL[1]} alt="메인 두번째 이미지" />
+					<Image src={HOME_IMAGE_URL[1]} alt="메인 두번째 이미지" />
 				</ContentInner>
 				<ContentInner>
 					<ContentRightText>
@@ -50,7 +50,7 @@ const Home = () => {
 					</ContentLeftText>
 				</ContentInner>
 				<ContentInner>
-					<img src={HOME_IMAGE_URL[2]} alt="메인 세번째 이미지" width={500} height={'auto'} />
+					<Image src={HOME_IMAGE_URL[2]} alt="메인 세번째 이미지" />
 				</ContentInner>
 				<BackgroundWrapper>
 					<Icon name="background" width={1052} height={1047} />
@@ -100,4 +100,10 @@ const BackgroundWrapper = styled('div')`
 	z-index: -1;
 	right: -250px;
 	bottom: -20px;
+`;
+
+const Image = styled('img')`
+	max-width: 600px;
+	width: 100%;
+	height: 'auto';
 `;
